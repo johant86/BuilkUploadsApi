@@ -2,7 +2,6 @@
 using builk_uploads_api.FileData.Repositories;
 using builk_uploads_api.Middlewares;
 using builk_uploads_api.Utils;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System;
@@ -23,7 +22,6 @@ namespace builk_uploads_api.FileData.Controllers
         }
 
         [HttpPost]
-       // [Authorize]
         public IActionResult UploadData([FromForm] UploadRequest dataConfig)
         {
             try
@@ -38,7 +36,7 @@ namespace builk_uploads_api.FileData.Controllers
             }
             catch (Exception ex)
             {
-                new LogErrors().WriteLog("UploadDataController", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message, $"Request=> {JsonConvert.SerializeObject(dataConfig)}");
+                new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, (JsonConvert.SerializeObject(dataConfig)));
                 return StatusCode(500);
             }
         }

@@ -20,4 +20,12 @@ namespace builk_uploads_api.FileData.Domain
         public int columnNumber { set; get; }
         public string errorDate { set; get; }
     }
+
+    public class GenericError
+    {
+        public int errorCode { set; get; }
+        public string error { set; get; }
+        public string severity { set; get; }
+        public string errorDate { set; get; }
+    }
 }

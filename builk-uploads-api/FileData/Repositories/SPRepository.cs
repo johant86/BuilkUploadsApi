@@ -4,10 +4,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.SharePoint.Client;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace builk_uploads_api.FileData.Repositories
 {
@@ -32,7 +29,7 @@ namespace builk_uploads_api.FileData.Repositories
 
             {
                 throw ex;
-                new LogErrors().WriteLog("UploadDataController", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message, $"Request=> {Url + User + Password + Domain}");
+                new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, (JsonConvert.SerializeObject($"Request=> {Url + User + Password + Domain}")));
             }
 
         }

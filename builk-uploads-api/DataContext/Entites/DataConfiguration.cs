@@ -23,6 +23,7 @@ namespace builk_uploads_api.DataContext.Entites
         public string filecolumnName { set; get; }
         public string columnName { set; get; }
         public string type { set; get; }
+        public int? idValidation { set; get; }
         public string  validation { set; get; }
         public int order { set; get; }
     }

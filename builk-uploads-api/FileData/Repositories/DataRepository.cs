@@ -1,6 +1,7 @@
 ﻿
 using builk_uploads_api.DataContext;
 using builk_uploads_api.DataContext.Context;
+using builk_uploads_api.DataContext.Entites;
 using builk_uploads_api.FileData.Domain;
 using builk_uploads_api.FileData.Domain.Factories;
 using builk_uploads_api.Settings;
@@ -9,10 +10,9 @@ using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using Microsoft.VisualBasic.FileIO;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -37,41 +37,84 @@ namespace builk_uploads_api.FileData.Repositories
         public SaveDataResult SaveData(UploadRequest request)
         {
 
-            if (this.ValidateFormat(request.file, this._ValidFileFormats) == false)
-            {
-                return new SaveDataResult
-                {
-                    success = false,
-                    message = "Invalid file extension",
-                    errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.InvalidFileExtension, Path.GetExtension(request.file.FileName), 0) }
-                };
-            }
-            else
+            try
             {
 
-                if (request != null)
+                if (this.ValidateFormat(request.file, this._ValidFileFormats) == false)
                 {
-                    string[,] data = this.ReadFile(request.file);
-
-                    var initialConfiguration = this._DbContext.DataUploadConfiguration(request.alias);
-                    if (initialConfiguration.idSource == 1)
+                    return new SaveDataResult
                     {
-                        if (initialConfiguration.conectionString != null)
-                        {
-                            //string s = "Server=(LocalDB)\\LocalDB;Database=Test_DB;User Id=sa;Password=123456;";
-                            var optionsBuilder = new DbContextOptionsBuilder<DataUploadContext>();
-                            optionsBuilder.UseSqlServer(initialConfiguration.conectionString);
-                            var _dbSource = new DataUploadContext(optionsBuilder.Options);
-                            int registers = _dbSource.DataToUpload(data, initialConfiguration);
-                        
+                        success = false,
+                        message = MessageDescription.Extension,
+                        errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.InvalidFileExtension,
+                    Path.GetExtension(request.file.FileName), 0 , Severity.Fatal) }
+                    };
+                }
+                else
+                {
 
-                            if (registers > 0)
+                    if (request != null)
+                    {
+                        string[,] data = this.ReadFile(request.file);
+
+                        var initialConfiguration = this._DbContext.DataUploadConfiguration(request.alias);
+                        if (initialConfiguration != null)
+                        {
+                            var ValidColumns = ValidateColumns(data, initialConfiguration.Columns);
+                            if (ValidColumns.Count() == 0)
+                            {
+                                if (initialConfiguration.idSource == (int)Source.SQL)
+                                {
+                                    if (initialConfiguration.conectionString != null)
+                                    {
+                                        var optionsBuilder = new DbContextOptionsBuilder<DataUploadContext>();
+                                        optionsBuilder.UseSqlServer(initialConfiguration.conectionString);
+                                        var _dbSource = new DataUploadContext(optionsBuilder.Options);
+                                        UploadResult result = _dbSource.DataToUpload(data, initialConfiguration);
+
+
+                                        if (result.RowsInserted > 0)
+                                        {
+                                            return new SaveDataResult
+                                            {
+                                                success = true,
+                                                message = MessageDescription.Uploaded,
+                                                errorDetails = { }
+                                            };
+                                        }
+                                        else
+                                        {
+                                            return new SaveDataResult
+                                            {
+                                                success = false,
+                                                message = MessageDescription.UploadError,
+                                                errorDetails = result.errorDetails
+                                            };
+                                        }
+                                    }
+                                    else
+                                    {
+                                        return new SaveDataResult
+                                        {
+                                            success = false,
+                                            message = MessageDescription.InvalidConection,
+                                            errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.NotFoundConectionString, Path.GetExtension(request.file.FileName), 0, Severity.Fatal) }
+                                        };
+                                    }
+
+                                }
+                                else if (initialConfiguration.idSource == (int)Source.SHAREPOINT)
+                                {
+
+                                }
+                            }
+                            else
                             {
                                 return new SaveDataResult
                                 {
-                                    success = true,
-                                    message = "the information was uploaded successfully.",
-                                    errorDetails = { }
+                                    success = false,
+                                    message = ValidColumns.Find(x => x.errorCode == 7) != null ? MessageDescription.InvalidCulumnsNumber : MessageDescription.InvalidColumn,
+                                    errorDetails = ValidColumns
                                 };
                             }
                         }
@@ -80,25 +123,72 @@ namespace builk_uploads_api.FileData.Repositories
                             return new SaveDataResult
                             {
                                 success = false,
-                                message = "Not fount conection string",
-                                errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.NotFoundConectionString, Path.GetExtension(request.file.FileName), 0) }
+                                message = MessageDescription.Alias,
+                                errorDetails = new List<ErrorDetails> {
+                            ErrorFactory.GetError(ErrorEnum.InvalidAlias, request.alias, 0,Severity.Fatal) }
                             };
                         }
 
-                    }
-                    else if (initialConfiguration.idSource == 2)
-                    {
 
                     }
-
                 }
-                else
-                    throw new Exception("Not able to read data from provided file");
-
             }
+            catch (Exception ex)
+            {
+                new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, (JsonConvert.SerializeObject(request)));
+                throw ex;
+            }
+
+
+
             return new SaveDataResult();
         }
 
+        private List<ErrorDetails> ValidateColumns(string[,] fileColumns, List<Columns> sourceColumns)
+        {
+            try
+            {
+                List<string> headers = new List<string>();
+                List<ErrorDetails> errorList = new List<ErrorDetails>();
+                for (int i = 0; i < fileColumns.GetLength(1); i++)
+                {
+                    string header = fileColumns[0, i];
+                    headers.Add(header);
+                }
+
+                if (headers.Count() > 0)
+                {
+                    if (headers.Count() == sourceColumns.Count())
+                    {
+                        foreach (var item in headers)
+                        {
+                            var c = sourceColumns.Find(x => x.filecolumnName.ToUpper().Trim() == item.ToUpper().Trim());
+                            if (c == null)
+                            {
+                                var error = ErrorFactory.GetError(ErrorEnum.InvalidColumns,
+                                    item, headers.IndexOf(item) + 1, Severity.Fatal);
+                                errorList.Add(error);
+                            }
+
+                        }
+                    }
+                    else
+                    {
+                        var error = ErrorFactory.GetError(ErrorEnum.InvalidCulumnsNumber, $"The document has {headers.Count()} columns while the destination table has {sourceColumns.Count()}.", 0, Severity.Fatal);
+                        errorList.Add(error);
+                    }
+
+                }
+
+                return errorList;
+            }
+            catch (Exception ex)
+            {
+                new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, ($"Request=> {JsonConvert.SerializeObject(fileColumns) + JsonConvert.SerializeObject(sourceColumns)}"));
+                throw ex;
+            }
+            
+        }
         private string[,] ReadFile(IFormFile file)
         {
             try
@@ -118,7 +208,7 @@ namespace builk_uploads_api.FileData.Repositories
             }
             catch (Exception ex)
             {
-                new LogErrors().WriteLog("DataRepository", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message, string.Empty);
+                new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, (JsonConvert.SerializeObject(file)));
                 throw ex;
             }
         }
@@ -145,8 +235,8 @@ namespace builk_uploads_api.FileData.Repositories
                             int column = 0;
                             for (int i = 0; i < reader.FieldCount; i++)
                             {
-                                if(reader.GetValue(column) != null)
-                                data[row, column] = reader.GetValue(column).ToString();
+                                if (reader.GetValue(column) != null)
+                                    data[row, column] = reader.GetValue(column).ToString();
                                 column++;
                             }
                             row++;
@@ -158,7 +248,8 @@ namespace builk_uploads_api.FileData.Repositories
             }
             catch (Exception ex)
             {
-                new LogErrors().WriteLog("DataRepository", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message, string.Empty);
+                new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, ($"Request=> {JsonConvert.SerializeObject(file) + JsonConvert.SerializeObject(path)}"));
+
                 throw ex;
             }
         }
@@ -166,24 +257,24 @@ namespace builk_uploads_api.FileData.Repositories
         {
             try
             {
-               
+
                 using (FileStream fileStream = File.Create(path))
                 {
                     file.CopyTo(fileStream);
                     fileStream.Flush();
                 }
                 Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-  
+
                 using (var reader = new StreamReader(path))
                 {
-                    string  delimiter = DetectDelimiter(reader);
+                    string delimiter = DetectDelimiter(reader);
                     var col = reader.ReadLine().Split(delimiter).Count();
                     var row = (File.ReadAllLines(path).Length);
                     string[,] data = new string[row, col];
                     string[] headers = reader.ReadLine().Split(',');
                     string[] Lineas = File.ReadAllLines(path);
                     int contRow = 0;
-                    
+
                     foreach (var item in Lineas)
                     {
                         var valores = item.Split(delimiter);
@@ -196,15 +287,15 @@ namespace builk_uploads_api.FileData.Repositories
                         contRow++;
 
                     }
-                   
+
                     return data;
                 }
 
-                
+
             }
             catch (Exception ex)
             {
-                new LogErrors().WriteLog("DataRepository", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message, string.Empty);
+                new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, (JsonConvert.SerializeObject(file + path)));
                 throw ex;
             }
         }
@@ -213,24 +304,22 @@ namespace builk_uploads_api.FileData.Repositories
         {
             try
             {
-                return extensions.Contains(System.IO.Path.GetExtension(file.FileName).ToLower());
+                if (file != null)
+                    return extensions.Contains(Path.GetExtension(file.FileName).ToLower());
+                else
+                    return false;
             }
             catch (Exception ex)
             {
-                new LogErrors().WriteLog("DataRepository", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message, string.Empty);
+                new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, ($"Request=> {JsonConvert.SerializeObject(file) + JsonConvert.SerializeObject(extensions)}"));
                 return false;
             }
         }
 
         private string DetectDelimiter(StreamReader reader)
         {
-            // assume one of following delimiters
             var possibleDelimiters = new List<string> { ",", ";", "\t", "|" };
-
             var headerLine = reader.ReadLine();
-
-            // reset the reader to initial position for outside reuse
-            // Eg. Csv helper won't find header line, because it has been read in the Reader
             reader.BaseStream.Position = 0;
             reader.DiscardBufferedData();
 
@@ -241,30 +330,10 @@ namespace builk_uploads_api.FileData.Repositories
                     return possibleDelimiter;
                 }
             }
-
             return possibleDelimiters[0];
         }
 
     }
 }
 
-//int count = 0;
-//var v = new { Amount = 108, Message = "Hello" };
-//do
-//{
-//    while (reader.Read())
-//    {
-//        count++;
-//        DocumentFields documentData = new DocumentFields();
-//        for (int column = 0; column < reader.FieldCount; column++)
-//        {
-//            var p = reader.GetValue(column);
-//            //var v = reader.GetValue(column).GetType();
-//            if (count > 1)
-//            {
-
-//            }
-//        }
-//    }
-//} while (reader.NextResult());
 
