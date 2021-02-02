@@ -1,36 +1,25 @@
-﻿using builk_uploads_api.Settings;
-using builk_uploads_api.Utils;
+﻿using builk_uploads_api.DataContext;
+using builk_uploads_api.Settings;
+using builk_uploads_api.Shared.Repositories;
 using Microsoft.Extensions.Options;
 using Microsoft.SharePoint.Client;
-using Newtonsoft.Json;
-using System;
-using System.Net;
+using System.Collections.Generic;
 
 namespace builk_uploads_api.FileData.Repositories
 {
-    public class SPRepository
+    public class SPRepository: SPBaseRepository
     {
-        protected readonly AppSettings _AppSettings;
-
-        public SPRepository(IOptions<AppSettings> appSettings)
+        private readonly ClientContext _Context;
+        private readonly DataConfigContext _DbContext;
+        public SPRepository(IOptions<AppSettings> sharePointSettings, DataConfigContext dbContext) : base(sharePointSettings)
         {
-            this._AppSettings = appSettings.Value;
+            this._DbContext = dbContext;
+            //this._Context = SPBaseRepository.GetSPContext(this._sharePointSettings.JobOpeningsUrl, this._sharePointSettings.networkLogin, this._sharePointSettings.password, this._sharePointSettings.domain);
+
         }
 
-        public static ClientContext GetSPContext(string Url, string User, string Password, string Domain)
+        public void test()
         {
-            try
-            {
-                ClientContext context = new ClientContext(Url);
-                context.Credentials = new NetworkCredential(User, Password, Domain);
-                return context;
-            }
-            catch (Exception ex)
-
-            {
-                throw ex;
-                new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, (JsonConvert.SerializeObject($"Request=> {Url + User + Password + Domain}")));
-            }
 
         }
     }

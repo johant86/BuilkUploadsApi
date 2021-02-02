@@ -5,6 +5,7 @@ using builk_uploads_api.DataContext.Entites;
 using builk_uploads_api.FileData.Domain;
 using builk_uploads_api.FileData.Domain.Factories;
 using builk_uploads_api.Settings;
+using builk_uploads_api.Shared.Repositories;
 using builk_uploads_api.Utils;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
@@ -19,18 +20,19 @@ using System.Text;
 
 namespace builk_uploads_api.FileData.Repositories
 {
-    public class DataRepository
+    public class DataRepository : SPBaseRepository
     {
         private readonly List<string> _ValidFileFormats = new List<string>();
-        protected readonly AppSettings _AppSettings;
+        //protected readonly AppSettings _AppSettings;
         private readonly DataConfigContext _DbContext;
-        public SQLRepository _SQLRepo { get; private set; }
-        public SPRepository _SharePointRepo { get; private set; }
 
-        public DataRepository(IOptions<AppSettings> appSettings, DataConfigContext dbContext)
+        //public SQLRepository _SQLRepo { get; private set; }
+        //public SPRepository _SharePointRepo { get; private set; }
+
+        public DataRepository(IOptions<AppSettings> appSettings, DataConfigContext dbContext): base(appSettings)
         {
-            this._AppSettings = appSettings.Value;
-            this._ValidFileFormats = this._AppSettings.AllowedFileFormats.ToList();
+            //this._AppSettings = appSettings.Value;
+            this._ValidFileFormats = this._AppSettings.AllowedFileFormats.ToList(); 
             this._DbContext = dbContext;
         }
 
@@ -105,7 +107,11 @@ namespace builk_uploads_api.FileData.Repositories
                                 }
                                 else if (initialConfiguration.idSource == (int)Source.SHAREPOINT)
                                 {
-
+                                    var optionsBuilder = new DbContextOptionsBuilder<DataUploadContext>();
+                                    optionsBuilder.UseSqlServer(initialConfiguration.conectionString);
+                                    var _dbSource = new DataUploadContext(optionsBuilder.Options);
+                                    UploadResult result = _dbSource.DataToUpload(data, initialConfiguration);
+                                    var _SpContext = SPBaseRepository.GetSPContext(initialConfiguration.sharePointSiteUrl, this._AppSettings.sharepointSettings.NetworkLogin, this._AppSettings.sharepointSettings.Password, this._AppSettings.sharepointSettings.Domain);
                                 }
                             }
                             else
