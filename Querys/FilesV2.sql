@@ -12,12 +12,13 @@ INSERT INTO [dbo].[tb_Source] VALUES ('SHARE POINT',GETDATE(),1);
 
 
 GO
+
 CREATE TABLE [dbo].[tb_SourceConfiguration]
 (
     [id] INT IDENTITY NOT NULL,
 	[idSource] INT   NOT NULL,
 	[alias] VARCHAR(50) NOT NULL,
-	[tableName] VARCHAR(50) NOT NULL,
+	[tableName] VARCHAR(50) NULL,
 	[conectionString] VARCHAR(200)  NULL,
 	[sharePointSiteUrl] VARCHAR(50)  NULL,
 	[sharePointListName] VARCHAR(50)  NULL,
@@ -25,8 +26,18 @@ CREATE TABLE [dbo].[tb_SourceConfiguration]
 	[lastModificationUser] INT  NULL
 )
 
+----------------------------------------------------------------
+-------------------LOCAL DB-------------------------------------
+----------------------------------------------------------------
 INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'RAF','[dbo].[tb_Document]','Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;',NULL,NULL,GETDATE(),1);
 INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]','Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;',NULL,NULL,GETDATE(),1);
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFTNotifier',NULL,NULL,'http://lamazdev005/tools/RAFT/Lists/RAFTNotifier','RAFTNotifier',GETDATE(),1);
+------------------------------------------------------------------
+-------------------CRSJODEV014-------------------------------------
+-------------------------------------------------------------------
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'RAF','[dbo].[tb_Document]','Server=CRSJODEV014;Database=Data_Upload_API;User Id=toji;Password=Sykes2021;',NULL,NULL,GETDATE(),1);
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]','Server=CRSJODEV014;Database=Data_Upload_API;User Id=toji;Password=Sykes2021;',NULL,NULL,GETDATE(),1);
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFTNotifier',NULL,NULL,'http://lamazdev005/tools/RAFT/Lists/RAFTNotifier','RAFTNotifier',GETDATE(),1);
 
 GO
 CREATE TABLE [dbo].[tb_ColumnsBySource]
@@ -60,6 +71,17 @@ INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (2,'wager Type','wagerType',NULL,'
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (2,'league','league',NULL,'string',3,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (2,'line Type','lineType',NULL,'string',4,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (2,'description','description',NULL,'string',5,GETDATE(),1)
+
+
+---------------------SHARE POINT LIST-------------------
+INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'RAFTID','Raftid',NULL,'string',1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'TokenUsed','TokenUsed',NULL,'bool',2,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'Token','Token',NULL,'string',3,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'ResponseInfo','ResponseInfo',NULL,'string',4,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'Phone','Phone',1,'string',5,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'Email','Email',3,'string',6,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'Identification','Identification',2,'string',7,GETDATE(),1)
+
 
 GO
 CREATE TABLE [dbo].[tb_Validations]
