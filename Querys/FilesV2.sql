@@ -31,13 +31,13 @@ CREATE TABLE [dbo].[tb_SourceConfiguration]
 ----------------------------------------------------------------
 INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'RAF','[dbo].[tb_Document]','Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;',NULL,NULL,GETDATE(),1);
 INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]','Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;',NULL,NULL,GETDATE(),1);
-INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFTNotifier',NULL,NULL,'http://lamazdev005/tools/RAFT/Lists/RAFTNotifier','RAFTNotifier',GETDATE(),1);
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFTNotifier',NULL,NULL,'http://lamazdev005/tools/RAFT','RAFTNotifier',GETDATE(),1);
 ------------------------------------------------------------------
 -------------------CRSJODEV014-------------------------------------
 -------------------------------------------------------------------
 INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'RAF','[dbo].[tb_Document]','Server=CRSJODEV014;Database=Data_Upload_API;User Id=toji;Password=Sykes2021;',NULL,NULL,GETDATE(),1);
 INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]','Server=CRSJODEV014;Database=Data_Upload_API;User Id=toji;Password=Sykes2021;',NULL,NULL,GETDATE(),1);
-INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFTNotifier',NULL,NULL,'http://lamazdev005/tools/RAFT/Lists/RAFTNotifier','RAFTNotifier',GETDATE(),1);
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFT Notifier',NULL,NULL,'http://lamazdev005/tools/RAFT','RAFTNotifier',GETDATE(),1);
 
 GO
 CREATE TABLE [dbo].[tb_ColumnsBySource]
@@ -74,7 +74,7 @@ INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (2,'description','description',NUL
 
 
 ---------------------SHARE POINT LIST-------------------
-INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'RAFTID','Raftid',NULL,'string',1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'RAFTID','Title',NULL,'string',1,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'TokenUsed','TokenUsed',NULL,'bool',2,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'Token','Token',NULL,'string',3,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'ResponseInfo','ResponseInfo',NULL,'string',4,GETDATE(),1)

@@ -7,7 +7,7 @@ namespace builk_uploads_api.Settings
 {
     public class AppSettings
     {
-        public SharepointSettings sharepointSettings { set; get; }
+        public SharepointSettings SharePointSettings { set; get; }
         public string[] AllowedFileFormats { set; get; }
     }
 

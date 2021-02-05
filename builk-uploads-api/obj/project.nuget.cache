@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "ooF07gIU5hAPD+d5mooaYL2lNS/6zNwgWwImA5UpcYSqyT05wwTBtI2+iRtlFwWwMOKt+al7CyBDVVQ7RRFclg==",
+  "dgSpecHash": "Cwz1XHzJIZuFIL9Jsy7baxQDz+eyDWY9uYpv8Nh75V8cW/J2/ycerVQeXiD9CfH47caUDZgA7BnAjnIYEisj3Q==",
   "success": true,
   "projectFilePath": "C:\\Users\\jvivas\\Desktop\\Sprofesional\\builk-uploads-api\\builk-uploads-api\\builk-uploads-api.csproj",
   "expectedPackageFiles": [
@@ -36,7 +36,6 @@
     "C:\\Users\\jvivas\\.nuget\\packages\\microsoft.net.http.headers\\2.2.0\\microsoft.net.http.headers.2.2.0.nupkg.sha512",
     "C:\\Users\\jvivas\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
     "C:\\Users\\jvivas\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",
-    "C:\\Users\\jvivas\\.nuget\\packages\\microsoft.sharepoint.client\\14.0.4762.1000\\microsoft.sharepoint.client.14.0.4762.1000.nupkg.sha512",
     "C:\\Users\\jvivas\\.nuget\\packages\\microsoft.win32.registry\\4.7.0\\microsoft.win32.registry.4.7.0.nupkg.sha512",
     "C:\\Users\\jvivas\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
     "C:\\Users\\jvivas\\.nuget\\packages\\newtonsoft.json\\12.0.3\\newtonsoft.json.12.0.3.nupkg.sha512",
@@ -60,16 +59,5 @@
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder\\system.text.encodings.web\\4.5.0\\system.text.encodings.web.4.5.0.nupkg.sha512",
     "C:\\Users\\jvivas\\.nuget\\packages\\system.windows.extensions\\4.7.0\\system.windows.extensions.4.7.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "warningLevel": 1,
-      "message": "Package 'Microsoft.SharePoint.Client 14.0.4762.1000' was restored using '.NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8' instead of the project target framework '.NETCoreApp,Version=v3.1'. This package may not be fully compatible with your project.",
-      "libraryId": "Microsoft.SharePoint.Client",
-      "targetGraphs": [
-        ".NETCoreApp,Version=v3.1"
-      ]
-    }
-  ]
+  "logs": []
 }

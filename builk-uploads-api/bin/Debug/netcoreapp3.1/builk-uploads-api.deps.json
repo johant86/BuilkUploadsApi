@@ -31,10 +31,23 @@
           "Microsoft.EntityFrameworkCore.SqlServer": "5.0.2",
           "Microsoft.Extensions.DependencyInjection": "5.0.1",
           "Microsoft.Extensions.Options": "5.0.0",
-          "Microsoft.SharePoint.Client": "14.0.4762.1000",
           "Newtonsoft.Json": "12.0.3",
           "Swashbuckle.AspNetCore.SwaggerGen": "5.6.3",
           "Swashbuckle.AspNetCore.SwaggerUI": "5.6.3",
+          "Microsoft.Office.Client.Policy.Portable": "16.0.0.0",
+          "Microsoft.Office.Client.TranslationServices.Portable": "16.0.0.0",
+          "Microsoft.SharePoint.Client.DocumentManagement.Portable": "16.0.0.0",
+          "Microsoft.SharePoint.Client.Portable": "16.0.0.0",
+          "Microsoft.SharePoint.Client.Publishing.Portable": "16.0.0.0",
+          "Microsoft.SharePoint.Client.Runtime.Portable": "16.0.0.0",
+          "Microsoft.SharePoint.Client.Runtime.Windows": "16.0.0.0",
+          "Microsoft.SharePoint.Client.Runtime.WindowsPhone": "16.0.0.0",
+          "Microsoft.SharePoint.Client.Runtime.WindowsStore": "16.0.0.0",
+          "Microsoft.SharePoint.Client.Search.Applications.Portable": "16.0.0.0",
+          "Microsoft.SharePoint.Client.Search.Portable": "16.0.0.0",
+          "Microsoft.SharePoint.Client.Taxonomy.Portable": "16.0.0.0",
+          "Microsoft.SharePoint.Client.UserProfiles.Portable": "16.0.0.0",
+          "Microsoft.SharePoint.Client.WorkflowServices.Portable": "16.0.0.0",
           "Microsoft.AspNetCore.Antiforgery": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Abstractions": "3.1.0.0",
           "Microsoft.AspNetCore.Authentication.Cookies": "3.1.0.0",
@@ -699,22 +712,6 @@
           "lib/netstandard2.0/Microsoft.OpenApi.dll": {}
         }
       },
-      "Microsoft.SharePoint.Client/14.0.4762.1000": {
-        "runtime": {
-          "lib/Microsoft.SharePoint.Client.Runtime.dll": {
-            "assemblyVersion": "14.0.0.0",
-            "fileVersion": "14.0.4762.1000"
-          },
-          "lib/Microsoft.SharePoint.Client.dll": {
-            "assemblyVersion": "14.0.0.0",
-            "fileVersion": "14.0.4762.1000"
-          }
-        },
-        "compile": {
-          "lib/Microsoft.SharePoint.Client.Runtime.dll": {},
-          "lib/Microsoft.SharePoint.Client.dll": {}
-        }
-      },
       "Microsoft.Win32.Registry/4.7.0": {
         "dependencies": {
           "System.Security.AccessControl": "4.7.0",
@@ -901,6 +898,160 @@
       "System.Windows.Extensions/4.7.0": {
         "dependencies": {
           "System.Drawing.Common": "4.7.0"
+        }
+      },
+      "Microsoft.Office.Client.Policy.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.Office.Client.Policy.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.Office.Client.Policy.Portable.dll": {}
+        }
+      },
+      "Microsoft.Office.Client.TranslationServices.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.Office.Client.TranslationServices.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.Office.Client.TranslationServices.Portable.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.DocumentManagement.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.DocumentManagement.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.DocumentManagement.Portable.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.Portable.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.Publishing.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.Publishing.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.Publishing.Portable.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.Runtime.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.Runtime.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.Runtime.Portable.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.Runtime.Windows/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.Runtime.Windows.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.Runtime.Windows.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.Runtime.WindowsPhone/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.Runtime.WindowsPhone.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.Runtime.WindowsPhone.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.Runtime.WindowsStore/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.Runtime.WindowsStore.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.Runtime.WindowsStore.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.Search.Applications.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.Search.Applications.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.Search.Applications.Portable.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.Search.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.Search.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.Search.Portable.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.Taxonomy.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.Taxonomy.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.Taxonomy.Portable.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.UserProfiles.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.UserProfiles.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.UserProfiles.Portable.dll": {}
+        }
+      },
+      "Microsoft.SharePoint.Client.WorkflowServices.Portable/16.0.0.0": {
+        "runtime": {
+          "Microsoft.SharePoint.Client.WorkflowServices.Portable.dll": {
+            "assemblyVersion": "16.0.0.0",
+            "fileVersion": "16.0.6518.1200"
+          }
+        },
+        "compile": {
+          "Microsoft.SharePoint.Client.WorkflowServices.Portable.dll": {}
         }
       },
       "Microsoft.AspNetCore.Antiforgery/3.1.0.0": {
@@ -2755,13 +2906,6 @@
       "path": "microsoft.openapi/1.2.3",
       "hashPath": "microsoft.openapi.1.2.3.nupkg.sha512"
     },
-    "Microsoft.SharePoint.Client/14.0.4762.1000": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-pY+Fy+aG8bSHJYj4irmFc5Jo1mrglZGJ6MBR/aJYD75h+slmaSjj8xtBH82WLWH+gXghvZY7RDvZgJbPx1w+EQ==",
-      "path": "microsoft.sharepoint.client/14.0.4762.1000",
-      "hashPath": "microsoft.sharepoint.client.14.0.4762.1000.nupkg.sha512"
-    },
     "Microsoft.Win32.Registry/4.7.0": {
       "type": "package",
       "serviceable": true,
@@ -2915,6 +3059,76 @@
       "sha512": "sha512-CeWTdRNfRaSh0pm2gDTJFwVaXfTq6Xwv/sA887iwPTneW7oMtMlpvDIO+U60+3GWTB7Aom6oQwv5VZVUhQRdPQ==",
       "path": "system.windows.extensions/4.7.0",
       "hashPath": "system.windows.extensions.4.7.0.nupkg.sha512"
+    },
+    "Microsoft.Office.Client.Policy.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.Office.Client.TranslationServices.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.DocumentManagement.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.Publishing.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.Runtime.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.Runtime.Windows/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.Runtime.WindowsPhone/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.Runtime.WindowsStore/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.Search.Applications.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.Search.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.Taxonomy.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.UserProfiles.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Microsoft.SharePoint.Client.WorkflowServices.Portable/16.0.0.0": {
+      "type": "reference",
+      "serviceable": false,
+      "sha512": ""
     },
     "Microsoft.AspNetCore.Antiforgery/3.1.0.0": {
       "type": "referenceassembly",

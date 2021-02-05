@@ -1,6 +1,7 @@
 ﻿using builk_uploads_api.Settings;
 using Microsoft.Extensions.Options;
 using Microsoft.SharePoint.Client;
+using System;
 using System.Net;
 
 namespace builk_uploads_api.Shared.Repositories
@@ -9,20 +10,44 @@ namespace builk_uploads_api.Shared.Repositories
     {
         protected readonly AppSettings _AppSettings;
 
-        //public SPBaseRepository(IOptions<SharePointSettings> sharePointSettings)
-        //{
-        //    this._sharePointSettings = sharePointSettings.Value;
-        //}
         public SPBaseRepository(IOptions<AppSettings> appSettings)
         {
             this._AppSettings = appSettings.Value;
         }
 
-        public static ClientContext GetSPContext(System.String Url, System.String User, System.String Password, System.String Domain)
+        public static ClientContext GetSPContext(string Url, string User, string Password, string Domain)
         {
             ClientContext context = new ClientContext(Url);
             context.Credentials = new NetworkCredential(User, Password, Domain);
             return context;
+        }
+
+        public static ListItemCreationInformation  ListInfo (ClientContext Context, string ListTitle)
+        {
+            return new ListItemCreationInformation();
+        }
+        public static List GetListByTittleAsync(ClientContext Context, string ListTitle)
+        {
+            try
+            {
+                var list = Context.Web.Lists.GetByTitle(ListTitle);
+                Context.Load(list);
+                Context.ExecuteQueryAsync().Wait();
+
+
+                return list;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+        }
+
+        public static ListItemCreationInformation listinformation()
+        {
+            return new ListItemCreationInformation();
         }
     }
 }

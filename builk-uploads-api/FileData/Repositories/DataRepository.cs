@@ -23,15 +23,11 @@ namespace builk_uploads_api.FileData.Repositories
     public class DataRepository : SPBaseRepository
     {
         private readonly List<string> _ValidFileFormats = new List<string>();
-        //protected readonly AppSettings _AppSettings;
         private readonly DataConfigContext _DbContext;
 
-        //public SQLRepository _SQLRepo { get; private set; }
-        //public SPRepository _SharePointRepo { get; private set; }
 
         public DataRepository(IOptions<AppSettings> appSettings, DataConfigContext dbContext): base(appSettings)
         {
-            //this._AppSettings = appSettings.Value;
             this._ValidFileFormats = this._AppSettings.AllowedFileFormats.ToList(); 
             this._DbContext = dbContext;
         }
@@ -107,12 +103,37 @@ namespace builk_uploads_api.FileData.Repositories
                                 }
                                 else if (initialConfiguration.idSource == (int)Source.SHAREPOINT)
                                 {
-                                    var optionsBuilder = new DbContextOptionsBuilder<DataUploadContext>();
-                                    optionsBuilder.UseSqlServer(initialConfiguration.conectionString);
-                                    var _dbSource = new DataUploadContext(optionsBuilder.Options);
-                                    UploadResult result = _dbSource.DataToUpload(data, initialConfiguration);
-                                    var _SpContext = SPBaseRepository.GetSPContext(initialConfiguration.sharePointSiteUrl, this._AppSettings.sharepointSettings.NetworkLogin, this._AppSettings.sharepointSettings.Password, this._AppSettings.sharepointSettings.Domain);
+                                    var _SpContext = SPBaseRepository.GetSPContext(initialConfiguration.sharePointSiteUrl, this._AppSettings.SharePointSettings.NetworkLogin, this._AppSettings.SharePointSettings.Password, this._AppSettings.SharePointSettings.Domain);
+
+                                    var headers = initialConfiguration.Columns.Select(x => new { x.columnName }).ToList();
+                                    int count = 0;
+                                    var list = SPBaseRepository.GetListByTittleAsync(_SpContext, initialConfiguration.sharePointListName);
+                                    var itemCreationInfromation = SPBaseRepository.listinformation();
+                                    var newItem = list.AddItem(itemCreationInfromation);
+
+                                    for (int i = 0; i < data.GetLongLength(0); i++)
+                                    {
+                                        count = 0;
+                                        for (int j = 0; j < data.GetLength(1); j++)
+                                        {
+                                            if (i != 0)
+                                            {
+                                                var head = headers[count].columnName;
+                                                newItem[head] = data[i, j];
+                                                count++;
+                                            }
+
+                                        }
+                                        if (i != 0)
+                                        {
+                                            newItem.Update();
+                                            _SpContext.ExecuteQueryAsync().Wait();
+                                        }
+
+                                    }
+
                                 }
+                          
                             }
                             else
                             {
@@ -145,10 +166,53 @@ namespace builk_uploads_api.FileData.Repositories
                 throw ex;
             }
 
-
-
             return new SaveDataResult();
         }
+
+        //public SaveRaftMasterResponse SaveRaft(SaveRaftMasterRequest saveRaftMasterRequest)
+        //{
+        //    try
+        //    {
+
+        //        var list = SPBaseRepository.GetListByTittleAsync(this._RaftContext, this._sharePointSettings.lists.Master);
+
+        //        var itemCreationInfromation = new ListItemCreationInformation();
+        //        var newItem = list.AddItem(itemCreationInfromation);
+
+        //        //newItem["Title"] = saveRaftMasterRequest.firstName;
+        //        //newItem["PrimerApellido"] = saveRaftMasterRequest?.lastName ?? string.Empty;
+        //        //newItem["SegundoNombre"] = saveRaftMasterRequest?.secondName ?? string.Empty;
+        //        //newItem["SegundoApellido"] = saveRaftMasterRequest?.secondLastName ?? string.Empty;
+        //        //newItem["Badge"] = saveRaftMasterRequest?.badge ?? string.Empty;
+        //        //newItem["Cedula"] = saveRaftMasterRequest?.identificationNumber ?? string.Empty;
+        //        //newItem["Telefono"] = saveRaftMasterRequest?.phone ?? string.Empty;
+        //        //newItem["TelefonoPersonal"] = saveRaftMasterRequest?.personalPhone ?? string.Empty;
+        //        //newItem["CorreoCandidato"] = saveRaftMasterRequest?.candidateEmail ?? string.Empty;
+        //        //newItem["CorreoPersonal"] = saveRaftMasterRequest?.personalEmail ?? string.Empty;
+        //        //newItem["PerfilCandidato"] = saveRaftMasterRequest?.candidateProfile ?? string.Empty;
+        //        //newItem["NiveldeIngles"] = saveRaftMasterRequest?.englishLevel ?? string.Empty;
+        //        //newItem["ReferenciaExterna"] = saveRaftMasterRequest?.isExternalreference ?? true;
+        //        //newItem["GradoAcademico"] = saveRaftMasterRequest?.academicGrade ?? string.Empty;
+        //        //newItem["Otros"] = saveRaftMasterRequest?.othersDetails ?? string.Empty;
+        //        //newItem["MetodoDePago"] = saveRaftMasterRequest?.paymentMethod ?? string.Empty;
+        //        //newItem["IsResumeActive"] = saveRaftMasterRequest.isResumeActive;
+        //        //newItem["IsResumeRequired"] = saveRaftMasterRequest?.isResumeRequired;
+        //        //newItem["ModoTrabajo"] = saveRaftMasterRequest?.workType ?? string.Empty;
+        //        //newItem["ResumeCandidato"] = saveRaftMasterRequest?.resumeUrl ?? string.Empty;
+        //        //newItem["FechaReferencia"] = DateTime.Now.ToString();
+
+        //        newItem.Update();
+        //        this._RaftContext.ExecuteQueryAsync().Wait();
+
+        //        return new SaveRaftMasterResponse { success = true, message = _localizer["Saved successfully"], errorDetails = string.Empty };
+        //    }
+        //    catch (Exception ex)
+        //    {
+
+        //        new LogError().WriteLog("RaftRepository", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message);
+        //        return new SaveRaftMasterResponse { success = false, message = _localizer["Something went wrong please contact IT"], errorDetails = ex.Message };
+        //    }
+        //}
 
         private List<ErrorDetails> ValidateColumns(string[,] fileColumns, List<Columns> sourceColumns)
         {
