@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.SharePoint.Client;
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace builk_uploads_api.Shared.Repositories
 {
@@ -48,6 +49,28 @@ namespace builk_uploads_api.Shared.Repositories
         public static ListItemCreationInformation listinformation()
         {
             return new ListItemCreationInformation();
+        }
+
+        public static bool SPColumnValidation(int idValidation, string value)
+        {
+            switch (idValidation)
+            {
+                case (int)ValidationsEnum.Phone:
+                    if (value.Trim().Length == 8)
+                        return true;
+                    break;
+                case (int)ValidationsEnum.Identification:
+                    if (value.Trim().Length >= 9 && value.Trim().Length <= 21)
+                        return true;
+                    break;
+                case (int)ValidationsEnum.Email:
+                    var expresion = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+                    if (Regex.IsMatch(value, expresion))
+                        return true;
+                    break;
+            }
+
+            return false;
         }
     }
 }
