@@ -7,8 +7,6 @@ CREATE TABLE [dbo].[tb_Source]
 	[lastModificationDate] DATETIME  NOT NULL,
 	[lastModificationUser] INT NOT NULL
 )
-INSERT INTO [dbo].[tb_Source] VALUES ('SQL SERVER',GETDATE(),1);
-INSERT INTO [dbo].[tb_Source] VALUES ('SHARE POINT',GETDATE(),1);
 
 
 GO
@@ -26,18 +24,7 @@ CREATE TABLE [dbo].[tb_SourceConfiguration]
 	[lastModificationUser] INT  NULL
 )
 
-----------------------------------------------------------------
--------------------LOCAL DB-------------------------------------
-----------------------------------------------------------------
-INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'RAF','[dbo].[tb_Document]','Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;',NULL,NULL,GETDATE(),1);
-INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]','Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;',NULL,NULL,GETDATE(),1);
-INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFTNotifier',NULL,NULL,'http://lamazdev005/tools/RAFT','RAFTNotifier',GETDATE(),1);
-------------------------------------------------------------------
--------------------CRSJODEV014-------------------------------------
--------------------------------------------------------------------
-INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'RAF','[dbo].[tb_Document]','Server=CRSJODEV014;Database=Data_Upload_API;User Id=toji;Password=Sykes2021;',NULL,NULL,GETDATE(),1);
-INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]','Server=CRSJODEV014;Database=Data_Upload_API;User Id=toji;Password=Sykes2021;',NULL,NULL,GETDATE(),1);
-INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFT Notifier',NULL,NULL,'http://lamazdev005/tools/RAFT','RAFTNotifier',GETDATE(),1);
+
 
 GO
 CREATE TABLE [dbo].[tb_ColumnsBySource]
@@ -53,6 +40,39 @@ CREATE TABLE [dbo].[tb_ColumnsBySource]
 	[lastModificationUser] INT  NULL
 )
 
+
+GO
+CREATE TABLE [dbo].[tb_Validations]
+(
+    [id] INT IDENTITY NOT NULL,
+	[name] VARCHAR(50) NOT NULL,
+	[validation]  VARCHAR(50) NOT NULL,	
+	[lastModificationDate] DATETIME   NULL,
+	[lastModificationUser] INT  NULL
+)
+
+
+INSERT INTO [dbo].[tb_Source] VALUES ('SQL SERVER',GETDATE(),1);
+INSERT INTO [dbo].[tb_Source] VALUES ('SHARE POINT',GETDATE(),1);
+----------------------------------------------------------------
+-------------------LOCAL DB-------------------------------------
+----------------------------------------------------------------
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'RAF','[dbo].[tb_Document]','Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;',NULL,NULL,GETDATE(),1);
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]','Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;',NULL,NULL,GETDATE(),1);
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFTNotifier',NULL,NULL,'http://lamazdev005/tools/RAFT','RAFTNotifier',GETDATE(),1);
+------------------------------------------------------------------
+-------------------CRSJODEV014-------------------------------------
+-------------------------------------------------------------------
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'RAF','[dbo].[tb_Document]','Server=CRSJODEV014;Database=Data_Upload_API;User Id=toji;Password=Sykes2021;',NULL,NULL,GETDATE(),1);
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]','Server=CRSJODEV014;Database=Data_Upload_API;User Id=toji;Password=Sykes2021;',NULL,NULL,GETDATE(),1);
+INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFT Notifier',NULL,NULL,'http://lamazdev005/tools/RAFT','RAFTNotifier',GETDATE(),1);
+
+---------------------VALIDATIONS------------------------------------------------------------------
+INSERT INTO [dbo].[tb_Validations] VALUES ('Phone validation','Phone',GETDATE(),1)
+INSERT INTO [dbo].[tb_Validations] VALUES ('Identification validation','Identification',GETDATE(),1)
+INSERT INTO [dbo].[tb_Validations] VALUES ('Email validation','Email',GETDATE(),1)
+
+---------------------FIRST TABLE------------------------------------------------------------------
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'RAFTID','Raftid',NULL,'string',1,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'TokenUsed','TokenUsed',NULL,'bool',2,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'Token','Token',NULL,'string',3,GETDATE(),1)
@@ -60,7 +80,6 @@ INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'ResponseInfo','ResponseInfo',N
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'Phone','Phone',1,'string',5,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'Email','Email',3,'string',6,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'Identification','Identification',2,'string',7,GETDATE(),1)
-
 
 
 ---------------------SECUND TABLE-------------------
@@ -81,22 +100,6 @@ INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'ResponseInfo','ResponseInfo',N
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'Phone','Phone',1,'string',5,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'Email','Email',3,'string',6,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (3,'Identification','Identification',2,'string',7,GETDATE(),1)
-
-
-GO
-CREATE TABLE [dbo].[tb_Validations]
-(
-    [id] INT IDENTITY NOT NULL,
-	[name] VARCHAR(50) NOT NULL,
-	[validation]  VARCHAR(50) NOT NULL,	
-	[lastModificationDate] DATETIME   NULL,
-	[lastModificationUser] INT  NULL
-)
-
-INSERT INTO [dbo].[tb_Validations] VALUES ('Phone validation','Phone',GETDATE(),1)
-INSERT INTO [dbo].[tb_Validations] VALUES ('Identification validation','Identification',GETDATE(),1)
-INSERT INTO [dbo].[tb_Validations] VALUES ('Email validation','Email',GETDATE(),1)
-
 
 GO
 

@@ -112,10 +112,11 @@ namespace builk_uploads_api.FileData.Repositories
                                     int count = 0;
                                     var list = SPBaseRepository.GetListByTittleAsync(_SpContext, initialConfiguration.sharePointListName);
                                     var itemCreationInfromation = SPBaseRepository.listinformation();
-                                    var newItem = list.AddItem(itemCreationInfromation);
+                                   
 
                                     for (int i = 0; i < data.GetLongLength(0); i++)
                                     {
+                                        var newItem = list.AddItem(itemCreationInfromation);
                                         count = 0;
                                         for (int j = 0; j < data.GetLength(1); j++)
                                         {
