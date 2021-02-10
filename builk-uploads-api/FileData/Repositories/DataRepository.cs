@@ -2,6 +2,7 @@
 using builk_uploads_api.DataContext;
 using builk_uploads_api.DataContext.Context;
 using builk_uploads_api.DataContext.Entites;
+using builk_uploads_api.DataContext.Models;
 using builk_uploads_api.FileData.Domain;
 using builk_uploads_api.FileData.Domain.Factories;
 using builk_uploads_api.Settings;
@@ -55,13 +56,58 @@ namespace builk_uploads_api.FileData.Repositories
                     {
                         string[,] data = this.ReadFile(request.file);
 
-                        var initialConfiguration = this._DbContext.DataUploadConfiguration(request.alias);
-                        if (initialConfiguration != null)
+                        SourceConfig initialConfiguration = new SourceConfig();
+                        var configSorce = (from s in this._DbContext.tb_Source
+                                      join c in this._DbContext.tb_SourceConfiguration on s.id equals c.Source.id
+                                      where c.alias == request.alias
+                                      select new Configurations
+                                      {
+                                        id = c.id,
+                                        idSource = c.id,
+                                        type = s.type,
+                                        tableName = c.tableName,
+                                        conectionString=c.conectionString,
+                                        sharePointListName = c.sharePointListName,
+                                        sharePointSiteUrl = c.sharePointSiteUrl
+                                      }).FirstOrDefault();
+
+                        if (configSorce != null)
+                        {
+                            var columns = (from cs in this._DbContext.tb_ColumnBySource
+                                           join sc in this._DbContext.tb_SourceConfiguration on cs.SourceConfiguration.id equals sc.id
+                                           join dt in this._DbContext.tb_DataType on cs.DataType.id equals dt.id
+                                           join vl in this._DbContext.tb_Validation on cs.Validation.id equals vl.id into validateField
+                                           from v in validateField.DefaultIfEmpty()
+                                           where sc.alias == request.alias
+                                           select new Columns
+                                           {
+                                               id = sc.id,
+                                               filecolumnName =cs.filecolumnName,
+                                               columnName = cs.columnName,
+                                               type = dt.name,
+                                               validation = v.validation,
+                                               idValidation = v.id
+
+                                           }).ToList();
+
+                             initialConfiguration = new SourceConfig
+                            {
+                                type = configSorce.type,
+                                idSource = configSorce.idSource,
+                                tableName = configSorce.tableName,
+                                conectionString = configSorce.conectionString,
+                                sharePointListName = configSorce.sharePointListName,
+                                sharePointSiteUrl = configSorce.sharePointSiteUrl,
+                                Columns = columns
+                            };
+                        }
+
+                        if (configSorce != null)
                         {
                             var ValidColumns = ValidateColumns(data, initialConfiguration.Columns);
                             if (ValidColumns.Count() == 0)
                             {
-                                if (initialConfiguration.idSource == (int)Source.SQL)
+                                if (initialConfiguration.idSource == (int)DataSource.SQL)
                                 {
                                     if (initialConfiguration.conectionString != null)
                                     {
@@ -101,7 +147,7 @@ namespace builk_uploads_api.FileData.Repositories
                                     }
 
                                 }
-                                else if (initialConfiguration.idSource == (int)Source.SHAREPOINT)
+                                else if (initialConfiguration.idSource == (int)DataSource.SHAREPOINT)
                                 {
                                     UploadResult result = new UploadResult();
                                     result.errorDetails = new List<ErrorDetails>();
@@ -242,52 +288,7 @@ namespace builk_uploads_api.FileData.Repositories
 
             return new SaveDataResult();
         }
-
-        //public SaveRaftMasterResponse SaveRaft(SaveRaftMasterRequest saveRaftMasterRequest)
-        //{
-        //    try
-        //    {
-
-        //        var list = SPBaseRepository.GetListByTittleAsync(this._RaftContext, this._sharePointSettings.lists.Master);
-
-        //        var itemCreationInfromation = new ListItemCreationInformation();
-        //        var newItem = list.AddItem(itemCreationInfromation);
-
-        //        //newItem["Title"] = saveRaftMasterRequest.firstName;
-        //        //newItem["PrimerApellido"] = saveRaftMasterRequest?.lastName ?? string.Empty;
-        //        //newItem["SegundoNombre"] = saveRaftMasterRequest?.secondName ?? string.Empty;
-        //        //newItem["SegundoApellido"] = saveRaftMasterRequest?.secondLastName ?? string.Empty;
-        //        //newItem["Badge"] = saveRaftMasterRequest?.badge ?? string.Empty;
-        //        //newItem["Cedula"] = saveRaftMasterRequest?.identificationNumber ?? string.Empty;
-        //        //newItem["Telefono"] = saveRaftMasterRequest?.phone ?? string.Empty;
-        //        //newItem["TelefonoPersonal"] = saveRaftMasterRequest?.personalPhone ?? string.Empty;
-        //        //newItem["CorreoCandidato"] = saveRaftMasterRequest?.candidateEmail ?? string.Empty;
-        //        //newItem["CorreoPersonal"] = saveRaftMasterRequest?.personalEmail ?? string.Empty;
-        //        //newItem["PerfilCandidato"] = saveRaftMasterRequest?.candidateProfile ?? string.Empty;
-        //        //newItem["NiveldeIngles"] = saveRaftMasterRequest?.englishLevel ?? string.Empty;
-        //        //newItem["ReferenciaExterna"] = saveRaftMasterRequest?.isExternalreference ?? true;
-        //        //newItem["GradoAcademico"] = saveRaftMasterRequest?.academicGrade ?? string.Empty;
-        //        //newItem["Otros"] = saveRaftMasterRequest?.othersDetails ?? string.Empty;
-        //        //newItem["MetodoDePago"] = saveRaftMasterRequest?.paymentMethod ?? string.Empty;
-        //        //newItem["IsResumeActive"] = saveRaftMasterRequest.isResumeActive;
-        //        //newItem["IsResumeRequired"] = saveRaftMasterRequest?.isResumeRequired;
-        //        //newItem["ModoTrabajo"] = saveRaftMasterRequest?.workType ?? string.Empty;
-        //        //newItem["ResumeCandidato"] = saveRaftMasterRequest?.resumeUrl ?? string.Empty;
-        //        //newItem["FechaReferencia"] = DateTime.Now.ToString();
-
-        //        newItem.Update();
-        //        this._RaftContext.ExecuteQueryAsync().Wait();
-
-        //        return new SaveRaftMasterResponse { success = true, message = _localizer["Saved successfully"], errorDetails = string.Empty };
-        //    }
-        //    catch (Exception ex)
-        //    {
-
-        //        new LogError().WriteLog("RaftRepository", System.Reflection.MethodBase.GetCurrentMethod().Name, ex.Message);
-        //        return new SaveRaftMasterResponse { success = false, message = _localizer["Something went wrong please contact IT"], errorDetails = ex.Message };
-        //    }
-        //}
-
+ 
         private List<ErrorDetails> ValidateColumns(string[,] fileColumns, List<Columns> sourceColumns)
         {
             try

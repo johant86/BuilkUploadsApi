@@ -1,4 +1,5 @@
 ﻿using builk_uploads_api.DataContext.Entites;
+using builk_uploads_api.DataContext.Models;
 using builk_uploads_api.FileData.Domain;
 using builk_uploads_api.FileData.Domain.Factories;
 using builk_uploads_api.Utils;
@@ -19,7 +20,7 @@ namespace builk_uploads_api.DataContext.Context
         { }
         private DbSet<DataUploaded> Data { get; set; }
 
-        public UploadResult DataToUpload(string[,] documentData, SourceConfiguration configuration)
+        public UploadResult DataToUpload(string[,] documentData, SourceConfig configuration)
         {
             try
             {
