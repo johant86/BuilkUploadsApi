@@ -40,6 +40,17 @@ CREATE TABLE [dbo].[tb_Validations]
 )
 
 GO
+CREATE TABLE [dbo].[tb_DataType]
+(
+    [id] INT IDENTITY NOT NULL,
+	[name] VARCHAR(50)  NULL,
+	[description]  VARCHAR(50) NOT NULL,	
+	[lastModificationDate] DATETIME  NOT  NULL,
+	[lastModificationUser] INT  NOT NULL,
+	CONSTRAINT [PK_ID_tb_DataType] PRIMARY KEY CLUSTERED ([id] ASC)
+)
+
+GO
 CREATE TABLE [dbo].[tb_ColumnsBySource]
 (
     [id] INT IDENTITY NOT NULL,
@@ -48,7 +59,6 @@ CREATE TABLE [dbo].[tb_ColumnsBySource]
 	[columnName] VARCHAR(50)  NOT NULL,
 	[idValidation] INT NULL,
 	[type] VARCHAR(50)  NOT NULL,	
-    [order] INT  NOT NULL,
 	[lastModificationDate] DATETIME   NULL,
 	[lastModificationUser] INT  NULL,
 	CONSTRAINT [PK_ID_tb_ColumnsBySource] PRIMARY KEY CLUSTERED ([id] ASC),

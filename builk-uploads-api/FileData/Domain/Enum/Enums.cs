@@ -23,7 +23,7 @@ public enum ErrorCodesEnum
     InvalidData = 8
 }
 
-public enum Source
+public enum DataSource
 {
     SQL = 1,
     SHAREPOINT = 2,

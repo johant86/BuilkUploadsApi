@@ -7,9 +7,11 @@ C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Deb
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\builk-uploads-api.dll
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\builk-uploads-api.pdb
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\ExcelDataReader.dll
+C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\Humanizer.dll
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\Microsoft.Data.SqlClient.dll
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.dll
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Design.dll
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.Relational.dll
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\Microsoft.EntityFrameworkCore.SqlServer.dll
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Caching.Abstractions.dll
