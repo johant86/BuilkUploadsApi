@@ -11,12 +11,14 @@ using builk_uploads_api.Utils;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace builk_uploads_api.FileData.Repositories
@@ -27,9 +29,9 @@ namespace builk_uploads_api.FileData.Repositories
         private readonly DataConfigContext _DbContext;
 
 
-        public DataRepository(IOptions<AppSettings> appSettings, DataConfigContext dbContext): base(appSettings)
+        public DataRepository(IOptions<AppSettings> appSettings, DataConfigContext dbContext) : base(appSettings)
         {
-            this._ValidFileFormats = this._AppSettings.AllowedFileFormats.ToList(); 
+            this._ValidFileFormats = this._AppSettings.AllowedFileFormats.ToList();
             this._DbContext = dbContext;
         }
 
@@ -58,18 +60,18 @@ namespace builk_uploads_api.FileData.Repositories
 
                         SourceConfig initialConfiguration = new SourceConfig();
                         var configSorce = (from s in this._DbContext.tb_Source
-                                      join c in this._DbContext.tb_SourceConfiguration on s.id equals c.Source.id
-                                      where c.alias == request.alias
-                                      select new Configurations
-                                      {
-                                        id = c.id,
-                                        idSource = c.id,
-                                        type = s.type,
-                                        tableName = c.tableName,
-                                        conectionString=c.conectionString,
-                                        sharePointListName = c.sharePointListName,
-                                        sharePointSiteUrl = c.sharePointSiteUrl
-                                      }).FirstOrDefault();
+                                           join c in this._DbContext.tb_SourceConfiguration on s.id equals c.Source.id
+                                           where c.alias == request.alias
+                                           select new Configurations
+                                           {
+                                               id = c.id,
+                                               idSource = s.id,
+                                               type = s.type,
+                                               tableName = c.tableName,
+                                               conectionString = c.conectionString,
+                                               sharePointListName = c.sharePointListName,
+                                               sharePointSiteUrl = c.sharePointSiteUrl
+                                           }).FirstOrDefault();
 
                         if (configSorce != null)
                         {
@@ -82,15 +84,25 @@ namespace builk_uploads_api.FileData.Repositories
                                            select new Columns
                                            {
                                                id = sc.id,
-                                               filecolumnName =cs.filecolumnName,
+                                               filecolumnName = cs.filecolumnName,
                                                columnName = cs.columnName,
                                                type = dt.name,
                                                validation = v.validation,
                                                idValidation = v.id
 
                                            }).ToList();
+                            if (columns.Count() == 0)
+                            {
+                                return new SaveDataResult
+                                {
+                                    success = false,
+                                    message = MessageDescription.ErrorConfigurations,
+                                    errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.ColumnsNotFound,
+                                    "Columns configurations not found", 0 , Severity.Fatal) }
+                                };
+                            }
 
-                             initialConfiguration = new SourceConfig
+                            initialConfiguration = new SourceConfig
                             {
                                 type = configSorce.type,
                                 idSource = configSorce.idSource,
@@ -100,181 +112,181 @@ namespace builk_uploads_api.FileData.Repositories
                                 sharePointSiteUrl = configSorce.sharePointSiteUrl,
                                 Columns = columns
                             };
-                        }
-
-                        if (configSorce != null)
-                        {
-                            var ValidColumns = ValidateColumns(data, initialConfiguration.Columns);
-                            if (ValidColumns.Count() == 0)
-                            {
-                                if (initialConfiguration.idSource == (int)DataSource.SQL)
-                                {
-                                    if (initialConfiguration.conectionString != null)
-                                    {
-                                        var optionsBuilder = new DbContextOptionsBuilder<DataUploadContext>();
-                                        optionsBuilder.UseSqlServer(initialConfiguration.conectionString);
-                                        var _dbSource = new DataUploadContext(optionsBuilder.Options);
-                                        UploadResult result = _dbSource.DataToUpload(data, initialConfiguration);
 
 
-                                        if (result.RowsInserted > 0)
-                                        {
-                                            return new SaveDataResult
-                                            {
-                                                success = true,
-                                                message = MessageDescription.Uploaded,
-                                                errorDetails = { }
-                                            };
-                                        }
-                                        else
-                                        {
-                                            return new SaveDataResult
-                                            {
-                                                success = false,
-                                                message = MessageDescription.UploadError,
-                                                errorDetails = result.errorDetails
-                                            };
-                                        }
-                                    }
-                                    else
-                                    {
-                                        return new SaveDataResult
-                                        {
-                                            success = false,
-                                            message = MessageDescription.InvalidConection,
-                                            errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.NotFoundConectionString, Path.GetExtension(request.file.FileName), 0, Severity.Fatal) }
-                                        };
-                                    }
-
-                                }
-                                else if (initialConfiguration.idSource == (int)DataSource.SHAREPOINT)
-                                {
-                                    UploadResult result = new UploadResult();
-                                    result.errorDetails = new List<ErrorDetails>();
-                                    bool error = false;
-                                    int rowsUploaded = 0;
-                                    var _SpContext = SPBaseRepository.GetSPContext(initialConfiguration.sharePointSiteUrl, this._AppSettings.SharePointSettings.NetworkLogin, this._AppSettings.SharePointSettings.Password, this._AppSettings.SharePointSettings.Domain);
-                                    var SpInternalNames = initialConfiguration.Columns.Select(x => new { x.columnName }).ToList();
-                                    int count = 0;
-                                    var list = SPBaseRepository.GetListByTittleAsync(_SpContext, initialConfiguration.sharePointListName);
-                                    var itemCreationInfromation = SPBaseRepository.listinformation();
-                                   
-
-                                    for (int i = 0; i < data.GetLongLength(0); i++)
-                                    {
-                                        var newItem = list.AddItem(itemCreationInfromation);
-                                        count = 0;
-                                        for (int j = 0; j < data.GetLength(1); j++)
-                                        {
-
-                                            if (i != 0)
-                                            {
-                                                var documentHeader = data[0, j];
-                                                var columnConfig = initialConfiguration.Columns.Find(x => x.filecolumnName.ToUpper() == documentHeader.ToUpper());
-                                                if (columnConfig != null && data[i, j] != null)
-                                                {
-                                                    if (columnConfig.validation != null)
-                                                    {
-                                                        bool fieldValidation = SPColumnValidation((int)columnConfig.idValidation, data[i, j]);
-                                                        if (!fieldValidation)
-                                                        {
-                                                            error = true;
-                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.InvalidData,
-                                                             $"The data {data[i, j]} does not comply with the validation of the { documentHeader} field ", j + 1, Severity.Fatal);
-                                                            result.errorDetails.Add(ErrorValidation);
-                                                        }
-                                                    }
-
-                                                    var internalName = SpInternalNames[count].columnName;
-                                                    count++;
-
-                                                    switch (columnConfig.type)
-                                                    {
-                                                        case variablesType.Int:
-                                                            int num;
-                                                            bool IsInt = Int32.TryParse(data[i, j], out num);
-                                                            if (IsInt)
-                                                                newItem[internalName] = data[i, j];
-                                                            else
-                                                            {
-                                                                error = true;
-                                                                ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                                $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
-                                                                result.errorDetails.Add(ErrorValidation);
-                                                            }
-                                                            break;
-                                                        case variablesType.Boolean:
-                                                            bool IsBool = Boolean.TryParse(data[i, j], out IsBool);
-                                                            if (IsBool)
-                                                                newItem[internalName] = data[i, j];
-                                                            else
-                                                            {
-                                                                error = true;
-                                                                ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                                $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
-                                                                result.errorDetails.Add(ErrorValidation);
-                                                            }
-                                                            break;
-
-                                                        case variablesType.Datetime:
-                                                            DateTime date;
-                                                            bool IsDate = DateTime.TryParse(data[i, j], out date);
-                                                            if (IsDate)
-                                                                newItem[internalName] = data[i, j];
-                                                            else
-                                                            {
-                                                                error = true;
-                                                                ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                                $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
-                                                                result.errorDetails.Add(ErrorValidation);
-                                                            }
-                                                            break;
-                                                        default:
-                                                            newItem[internalName] = data[i, j];
-                                                            break;
-                                                    };
-                                                }
-
-                                            }
-
-                                        }
-                                        if (i != 0 && !error)
-                                        {
-                                            newItem.Update();
-                                            _SpContext.ExecuteQueryAsync().Wait();
-                                            rowsUploaded++;
-                                        }
-
-                                    }
-
-                                    return new SaveDataResult
-                                    {
-                                        success = error ? false : true,
-                                        message = error ? MessageDescription.UploadError : rowsUploaded + " rows " + MessageDescription.Uploaded,
-                                        errorDetails = result.errorDetails
-                                    };
-
-                                }
-                          
-                            }
-                            else
-                            {
-                                return new SaveDataResult
-                                {
-                                    success = false,
-                                    message = ValidColumns.Find(x => x.errorCode == 7) != null ? MessageDescription.InvalidCulumnsNumber : MessageDescription.InvalidColumn,
-                                    errorDetails = ValidColumns
-                                };
-                            }
                         }
                         else
                         {
                             return new SaveDataResult
                             {
                                 success = false,
-                                message = MessageDescription.Alias,
-                                errorDetails = new List<ErrorDetails> {
-                            ErrorFactory.GetError(ErrorEnum.InvalidAlias, request.alias, 0,Severity.Fatal) }
+                                message = MessageDescription.ErrorConfigurations,
+                                errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.ConfigurationNotFound,
+                                    "Configurations not found", 0 , Severity.Fatal) }
+                            };
+                        }
+
+                        var ValidColumns = ValidateColumns(data, initialConfiguration.Columns);
+                        if (ValidColumns.Count() == 0)
+                        {
+                            if (initialConfiguration.idSource == (int)DataSource.SQL)
+                            {
+                                if (initialConfiguration.conectionString != null)
+                                {
+                                    var optionsBuilder = new DbContextOptionsBuilder<DataUploadContext>();
+                                    optionsBuilder.UseSqlServer(initialConfiguration.conectionString);
+                                    var _dbSource = new DataUploadContext(optionsBuilder.Options);
+
+                                    UploadResult result = _dbSource.DataToUpload(data, initialConfiguration);
+
+
+                                    if (result.RowsInserted > 0)
+                                    {
+                                        return new SaveDataResult
+                                        {
+                                            success = true,
+                                            message = MessageDescription.Uploaded,
+                                            errorDetails = { }
+                                        };
+                                    }
+                                    else
+                                    {
+                                        return new SaveDataResult
+                                        {
+                                            success = false,
+                                            message = MessageDescription.UploadError,
+                                            errorDetails = result.errorDetails
+                                        };
+                                    }
+                                }
+                                else
+                                {
+                                    return new SaveDataResult
+                                    {
+                                        success = false,
+                                        message = MessageDescription.InvalidConection,
+                                        errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.NotFoundConectionString, Path.GetExtension(request.file.FileName), 0, Severity.Fatal) }
+                                    };
+                                }
+
+                            }
+                            else if (initialConfiguration.idSource == (int)DataSource.SHAREPOINT)
+                            {
+                                UploadResult result = new UploadResult();
+                                result.errorDetails = new List<ErrorDetails>();
+                                bool error = false;
+                                int rowsUploaded = 0;
+                                var _SpContext = SPBaseRepository.GetSPContext(initialConfiguration.sharePointSiteUrl, this._AppSettings.SharePointSettings.NetworkLogin, this._AppSettings.SharePointSettings.Password, this._AppSettings.SharePointSettings.Domain);
+                                var SpInternalNames = initialConfiguration.Columns.Select(x => new { x.columnName }).ToList();
+                                int count = 0;
+                                var list = SPBaseRepository.GetListByTittleAsync(_SpContext, initialConfiguration.sharePointListName);
+                                var itemCreationInfromation = SPBaseRepository.listinformation();
+
+
+                                for (int i = 0; i < data.GetLongLength(0); i++)
+                                {
+                                    var newItem = list.AddItem(itemCreationInfromation);
+                                    count = 0;
+                                    for (int j = 0; j < data.GetLength(1); j++)
+                                    {
+
+                                        if (i != 0)
+                                        {
+                                            var documentHeader = data[0, j];
+                                            var columnConfig = initialConfiguration.Columns.Find(x => x.filecolumnName.ToUpper() == documentHeader.ToUpper());
+                                            if (columnConfig != null && data[i, j] != null)
+                                            {
+                                                if (columnConfig.validation != null)
+                                                {
+                                                    bool fieldValidation = SPColumnValidation((int)columnConfig.idValidation, data[i, j]);
+                                                    if (!fieldValidation)
+                                                    {
+                                                        error = true;
+                                                        ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.InvalidData,
+                                                         $"The data {data[i, j]} does not comply with the validation of the { documentHeader} field ", j + 1, Severity.Fatal);
+                                                        result.errorDetails.Add(ErrorValidation);
+                                                    }
+                                                }
+
+                                                var internalName = SpInternalNames[count].columnName;
+                                                count++;
+
+                                                switch (columnConfig.type)
+                                                {
+                                                    case variablesType.Int:
+                                                        int num;
+                                                        bool IsInt = Int32.TryParse(data[i, j], out num);
+                                                        if (IsInt)
+                                                            newItem[internalName] = data[i, j];
+                                                        else
+                                                        {
+                                                            error = true;
+                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
+                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
+                                                            result.errorDetails.Add(ErrorValidation);
+                                                        }
+                                                        break;
+                                                    case variablesType.Boolean:
+                                                        bool IsBool = Boolean.TryParse(data[i, j], out IsBool);
+                                                        if (IsBool)
+                                                            newItem[internalName] = data[i, j];
+                                                        else
+                                                        {
+                                                            error = true;
+                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
+                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
+                                                            result.errorDetails.Add(ErrorValidation);
+                                                        }
+                                                        break;
+
+                                                    case variablesType.Datetime:
+                                                        DateTime date;
+                                                        bool IsDate = DateTime.TryParse(data[i, j], out date);
+                                                        if (IsDate)
+                                                            newItem[internalName] = data[i, j];
+                                                        else
+                                                        {
+                                                            error = true;
+                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
+                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
+                                                            result.errorDetails.Add(ErrorValidation);
+                                                        }
+                                                        break;
+                                                    default:
+                                                        newItem[internalName] = data[i, j];
+                                                        break;
+                                                };
+                                            }
+
+                                        }
+
+                                    }
+                                    if (i != 0 && !error)
+                                    {
+                                        newItem.Update();
+                                        _SpContext.ExecuteQueryAsync().Wait();
+                                        rowsUploaded++;
+                                    }
+
+                                }
+
+                                return new SaveDataResult
+                                {
+                                    success = error ? false : true,
+                                    message = error ? MessageDescription.UploadError : rowsUploaded + " rows " + MessageDescription.Uploaded,
+                                    errorDetails = result.errorDetails
+                                };
+
+                            }
+
+                        }
+                        else
+                        {
+                            return new SaveDataResult
+                            {
+                                success = false,
+                                message = ValidColumns.Find(x => x.errorCode == 7) != null ? MessageDescription.InvalidCulumnsNumber : MessageDescription.InvalidColumn,
+                                errorDetails = ValidColumns
                             };
                         }
                     }
@@ -288,7 +300,7 @@ namespace builk_uploads_api.FileData.Repositories
 
             return new SaveDataResult();
         }
- 
+
         private List<ErrorDetails> ValidateColumns(string[,] fileColumns, List<Columns> sourceColumns)
         {
             try
@@ -332,7 +344,7 @@ namespace builk_uploads_api.FileData.Repositories
                 new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, ($"Request=> {JsonConvert.SerializeObject(fileColumns) + JsonConvert.SerializeObject(sourceColumns)}"));
                 throw ex;
             }
-            
+
         }
         private string[,] ReadFile(IFormFile file)
         {

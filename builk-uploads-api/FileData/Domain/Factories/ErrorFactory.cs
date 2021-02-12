@@ -78,6 +78,26 @@ namespace builk_uploads_api.FileData.Domain.Factories
                         severity = severity
                     };
 
+                case ErrorEnum.ColumnsNotFound:
+                    return new ErrorDetails
+                    {
+                        error = error,
+                        columnNumber = column,
+                        errorCode = (int)ErrorCodesEnum.ColumnsNotFound,
+                        errorDate = DateTime.Now.ToShortDateString(),
+                        severity = severity
+                    };
+
+                case ErrorEnum.ConfigurationNotFound:
+                    return new ErrorDetails
+                    {
+                        error = error,
+                        columnNumber = column,
+                        errorCode = (int)ErrorCodesEnum.ConfigurationNotFound,
+                        errorDate = DateTime.Now.ToShortDateString(),
+                        severity = severity
+                    };
+
                 default:
                     return new ErrorDetails
                     {

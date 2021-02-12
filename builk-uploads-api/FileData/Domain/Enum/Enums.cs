@@ -7,7 +7,9 @@
     InvalidColumns,
     DataType,
     InvalidCulumnsNumber,
-    InvalidData
+    InvalidData,
+    ColumnsNotFound,
+    ConfigurationNotFound
 }
 
 
@@ -20,7 +22,9 @@ public enum ErrorCodesEnum
     Datatype = 5,
     InvalidColumn = 6,
     InvalidCulumnsNumber = 7,
-    InvalidData = 8
+    InvalidData = 8,
+    ColumnsNotFound=9,
+    ConfigurationNotFound=10
 }
 
 public enum DataSource
@@ -52,6 +56,7 @@ public static class MessageDescription
     public const string Uploaded = "Uploaded successfully";
     public const string UploadError = "Upload failure";
     public const string InvalidCulumnsNumber = "Column difference between document and destination";
+    public const string ErrorConfigurations = "Configuration not found.";
 }
 
 public static class variablesType

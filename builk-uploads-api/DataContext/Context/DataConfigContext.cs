@@ -20,7 +20,5 @@ namespace builk_uploads_api.DataContext
         public DbSet<Validation> tb_Validation { get; set; }
         public DbSet<DataType> tb_DataType { get; set; }
 
-        
-
     }
 }

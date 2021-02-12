@@ -149,6 +149,16 @@ CREATE TABLE  [dbo].[tb_Example2]
 	[lineType] VARCHAR(50)  NULL,
     [description] VARCHAR(50)   NULL,
 )
+DELETE [dbo].[tb_Example2]
+DELETE [dbo].[tb_Document]
+
+SELECT  * FROM  [dbo].[tb_Example2]
+SELECT  * FROM  [dbo].[tb_Document]
+
+DBCC CHECKIDENT ('[dbo].[tb_Example2]', RESEED, 0)  
+DBCC CHECKIDENT ('[dbo].[tb_Example2]')
+DBCC CHECKIDENT ('[dbo].[tb_Document]', RESEED, 0) 
+DBCC CHECKIDENT ('[dbo].[tb_Document]')
 
 -------------------------------------------------------------------------------------
 DBCC CHECKIDENT ('[dbo].[Source]', RESEED, 0)  
@@ -177,3 +187,11 @@ INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'ResponseInfo','ResponseInfo',NU
 INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'Phone','Phone',1,1,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'Email','Email',3,1,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'Identification','Identification',2,1,GETDATE(),1)
+
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (2,'date','date',NULL,4,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (2,'makeup','makeup',NULL,2,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (2,'type','type',NULL,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (2,'wager Type','wagerType',NULL,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (2,'league','league',NULL,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (2,'line Type','lineType',NULL,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (2,'description','description',NULL,1,GETDATE(),1)

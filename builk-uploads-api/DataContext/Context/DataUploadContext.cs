@@ -131,9 +131,10 @@ namespace builk_uploads_api.DataContext.Context
             }
             catch (Exception ex)
             {
-                throw;
                 new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, (JsonConvert.SerializeObject(configuration)));
+                return null;
             }
+            
         }
 
         public bool ValidateType(string type, string value)
