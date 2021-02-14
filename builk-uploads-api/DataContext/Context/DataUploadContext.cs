@@ -41,22 +41,22 @@ namespace builk_uploads_api.DataContext.Context
                         {
                             var documentHeader = documentData[0, j];
                             columnConfig = configuration.Columns.Find(x => x.filecolumnName.ToUpper() == documentHeader.ToUpper());
-                            var exelData = documentData[i, j];  
-                            
+                            var exelData = documentData[i, j];
+
                             if (columnConfig != null && exelData != null)
                             {
-                                                           
+
                                 if (columnConfig.validation != null)
                                 {
-                                    bool fieldValidation = ValidateColumn((int)columnConfig.idValidation, exelData);
-                                  
+                                    bool fieldValidation = ValidateColumn(columnConfig.validation, exelData);
+
                                     if (!fieldValidation)
                                     {
                                         error = true;
                                         ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.InvalidData,
-                                         $"The data {exelData} does not comply with the validation of the { documentHeader} field ", j + 1, Severity.Fatal);
+                                        columnConfig.validationErrorMsg, j + 1, i + 1, Severity.Fatal);
                                         result.errorDetails.Add(ErrorValidation);
-                                    }                                    
+                                    }
                                 }
                                 switch (columnConfig.type)
                                 {
@@ -69,7 +69,7 @@ namespace builk_uploads_api.DataContext.Context
                                         {
                                             error = true;
                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                            $"The data {exelData} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
+                                            $"The data {exelData} is not corresponds to the type of data valid for the {documentHeader}", j + 1, i + 1, Severity.Fatal);
                                             result.errorDetails.Add(ErrorValidation);
                                         }
                                         break;
@@ -79,9 +79,9 @@ namespace builk_uploads_api.DataContext.Context
                                             query += $"{(Convert.ToBoolean(exelData) == true ? 1 : 0)}" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
                                         else
                                         {
-                                            error = true;                            
+                                            error = true;
                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                            $"The data {exelData} is not corresponds to the type of data valid for the {documentHeader}",j + 1, Severity.Fatal);
+                                            $"The data {exelData} is not corresponds to the type of data valid for the {documentHeader}", j + 1, i + 1, Severity.Fatal);
                                             result.errorDetails.Add(ErrorValidation);
                                         }
                                         break;
@@ -92,12 +92,12 @@ namespace builk_uploads_api.DataContext.Context
                                         DateTime date;
                                         bool IsDate = DateTime.TryParse(exelData, out date);
                                         if (IsDate)
-                                        query += $"CONVERT (DATETIME, '{Convert.ToDateTime(exelData)}', 103)" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                            query += $"CONVERT (DATETIME, '{Convert.ToDateTime(exelData)}', 103)" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
                                         else
                                         {
-                                            error = true;                                         
+                                            error = true;
                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                            $"The data {exelData} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
+                                            $"The data {exelData} is not corresponds to the type of data valid for the {documentHeader}", j + 1, i + 1, Severity.Fatal);
                                             result.errorDetails.Add(ErrorValidation);
                                         }
                                         break;
@@ -123,7 +123,7 @@ namespace builk_uploads_api.DataContext.Context
                         if (idRegister.id > 0)
                             dataUpload++;
                     }
-                    
+
                 }
 
                 result.RowsInserted = dataUpload;
@@ -134,12 +134,12 @@ namespace builk_uploads_api.DataContext.Context
                 new LogErrors().WriteLog(ex.ToString(), ex.StackTrace, (JsonConvert.SerializeObject(configuration)));
                 return null;
             }
-            
+
         }
 
         public bool ValidateType(string type, string value)
         {
-            
+
             switch (type)
             {
                 case variablesType.Boolean:
@@ -156,14 +156,25 @@ namespace builk_uploads_api.DataContext.Context
                 case variablesType.Datetime:
                     DateTime date;
                     bool IsDate = DateTime.TryParse(value, out date);
-                        if (IsDate)
+                    if (IsDate)
                         return true;
                     break;
             }
 
             return false;
         }
-            public bool ValidateColumn(int idValidation, string value)
+
+
+        public bool ValidateColumn(string validation, string value)
+        {  
+                   // var expresion = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
+                    if (Regex.IsMatch(value, validation))
+                        return true;
+                  
+            return false;
+        }
+
+        public bool ValidateColumnById(int idValidation, string value)
         {
             switch (idValidation)
             {
@@ -172,14 +183,14 @@ namespace builk_uploads_api.DataContext.Context
                         return true;
                     break;
                 case (int)ValidationsEnum.Identification:
-                    if (value.Trim().Length >= 9  && value.Trim().Length <=21)
+                    if (value.Trim().Length >= 9 && value.Trim().Length <= 21)
                         return true;
                     break;
                 case (int)ValidationsEnum.Email:
                     var expresion = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
                     if (Regex.IsMatch(value, expresion))
                         return true;
-                    break;  
+                    break;
             }
 
             return false;

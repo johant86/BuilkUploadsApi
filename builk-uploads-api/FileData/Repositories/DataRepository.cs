@@ -48,7 +48,7 @@ namespace builk_uploads_api.FileData.Repositories
                         success = false,
                         message = MessageDescription.Extension,
                         errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.InvalidFileExtension,
-                    Path.GetExtension(request.file.FileName), 0 , Severity.Fatal) }
+                    Path.GetExtension(request.file.FileName),0,0,Severity.Fatal) }
                     };
                 }
                 else
@@ -88,7 +88,8 @@ namespace builk_uploads_api.FileData.Repositories
                                                columnName = cs.columnName,
                                                type = dt.name,
                                                validation = v.validation,
-                                               idValidation = v.id
+                                               idValidation = v.id,
+                                               validationErrorMsg= v.validationErrorMsg
 
                                            }).ToList();
                             if (columns.Count() == 0)
@@ -98,7 +99,7 @@ namespace builk_uploads_api.FileData.Repositories
                                     success = false,
                                     message = MessageDescription.ErrorConfigurations,
                                     errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.ColumnsNotFound,
-                                    "Columns configurations not found", 0 , Severity.Fatal) }
+                                    "Columns configurations not found", 0, 0 , Severity.Fatal) }
                                 };
                             }
 
@@ -122,7 +123,7 @@ namespace builk_uploads_api.FileData.Repositories
                                 success = false,
                                 message = MessageDescription.ErrorConfigurations,
                                 errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.ConfigurationNotFound,
-                                    "Configurations not found", 0 , Severity.Fatal) }
+                                    "Configurations not found", 0, 0 , Severity.Fatal) }
                             };
                         }
 
@@ -165,7 +166,7 @@ namespace builk_uploads_api.FileData.Repositories
                                     {
                                         success = false,
                                         message = MessageDescription.InvalidConection,
-                                        errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.NotFoundConectionString, Path.GetExtension(request.file.FileName), 0, Severity.Fatal) }
+                                        errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.NotFoundConectionString, Path.GetExtension(request.file.FileName), 0, 0 ,Severity.Fatal) }
                                     };
                                 }
 
@@ -198,12 +199,12 @@ namespace builk_uploads_api.FileData.Repositories
                                             {
                                                 if (columnConfig.validation != null)
                                                 {
-                                                    bool fieldValidation = SPColumnValidation((int)columnConfig.idValidation, data[i, j]);
+                                                    bool fieldValidation = SPColumnValidation(columnConfig.validation, data[i, j]);
                                                     if (!fieldValidation)
                                                     {
                                                         error = true;
                                                         ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.InvalidData,
-                                                         $"The data {data[i, j]} does not comply with the validation of the { documentHeader} field ", j + 1, Severity.Fatal);
+                                                        columnConfig.validationErrorMsg, j + 1, i+1, Severity.Fatal);
                                                         result.errorDetails.Add(ErrorValidation);
                                                     }
                                                 }
@@ -222,7 +223,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                         {
                                                             error = true;
                                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
+                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1,i+1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
                                                         break;
@@ -234,7 +235,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                         {
                                                             error = true;
                                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
+                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1,i+1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
                                                         break;
@@ -248,7 +249,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                         {
                                                             error = true;
                                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1, Severity.Fatal);
+                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1,i+1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
                                                         break;
@@ -323,7 +324,7 @@ namespace builk_uploads_api.FileData.Repositories
                             if (c == null)
                             {
                                 var error = ErrorFactory.GetError(ErrorEnum.InvalidColumns,
-                                    item, headers.IndexOf(item) + 1, Severity.Fatal);
+                                    item, headers.IndexOf(item) + 1,0, Severity.Fatal);
                                 errorList.Add(error);
                             }
 
@@ -331,7 +332,7 @@ namespace builk_uploads_api.FileData.Repositories
                     }
                     else
                     {
-                        var error = ErrorFactory.GetError(ErrorEnum.InvalidCulumnsNumber, $"The document has {headers.Count()} columns while the destination table has {sourceColumns.Count()}.", 0, Severity.Fatal);
+                        var error = ErrorFactory.GetError(ErrorEnum.InvalidCulumnsNumber, $"The document has {headers.Count()} columns while the destination table has {sourceColumns.Count()}.", 0,0, Severity.Fatal);
                         errorList.Add(error);
                     }
 

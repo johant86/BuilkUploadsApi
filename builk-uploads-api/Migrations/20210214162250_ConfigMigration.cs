@@ -46,6 +46,7 @@ namespace builk_uploads_api.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     validation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    validationErrorMsg = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     lastModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     lastModificationUser = table.Column<int>(type: "int", nullable: false)
                 },

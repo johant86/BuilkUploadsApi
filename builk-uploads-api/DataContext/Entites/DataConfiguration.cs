@@ -66,6 +66,7 @@ namespace builk_uploads_api.DataContext.Entites
         public int id { set; get; }
         public string name { set; get; }
         public string validation { set; get; }
+        public string validationErrorMsg { set; get; }
         public DateTime lastModificationDate { set; get; }
         public int lastModificationUser { set; get; }
     }

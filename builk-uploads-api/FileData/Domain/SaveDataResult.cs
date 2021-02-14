@@ -17,7 +17,8 @@ namespace builk_uploads_api.FileData.Domain
         public int errorCode { set; get; }
         public string error { set; get; }
         public string severity { set; get; }
-        public int columnNumber { set; get; }
+        //public int columnNumber { set; get; }
+        public string position { set; get; }
         public string errorDate { set; get; }
     }
 

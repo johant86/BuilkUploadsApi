@@ -23,7 +23,7 @@ namespace builk_uploads_api.Shared.Repositories
             return context;
         }
 
-        public static ListItemCreationInformation  ListInfo (ClientContext Context, string ListTitle)
+        public static ListItemCreationInformation ListInfo(ClientContext Context, string ListTitle)
         {
             return new ListItemCreationInformation();
         }
@@ -51,25 +51,10 @@ namespace builk_uploads_api.Shared.Repositories
             return new ListItemCreationInformation();
         }
 
-        public static bool SPColumnValidation(int idValidation, string value)
+        public static bool SPColumnValidation(string Validation, string value)
         {
-            switch (idValidation)
-            {
-                case (int)ValidationsEnum.Phone:
-                    if (value.Trim().Length == 8)
-                        return true;
-                    break;
-                case (int)ValidationsEnum.Identification:
-                    if (value.Trim().Length >= 9 && value.Trim().Length <= 21)
-                        return true;
-                    break;
-                case (int)ValidationsEnum.Email:
-                    var expresion = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
-                    if (Regex.IsMatch(value, expresion))
-                        return true;
-                    break;
-            }
-
+            if (Regex.IsMatch(value, Validation))
+                return true;
             return false;
         }
     }

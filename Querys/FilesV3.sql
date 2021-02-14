@@ -8,8 +8,8 @@ CREATE TABLE [dbo].[tb_Source]
 	[lastModificationUser] INT NOT NULL,
 	CONSTRAINT [PK_ID_tb_Source] PRIMARY KEY CLUSTERED ([id] ASC)
 )
-
 GO
+
 CREATE TABLE [dbo].[tb_SourceConfiguration]
 (
     [id] INT IDENTITY NOT NULL,
@@ -34,6 +34,7 @@ CREATE TABLE [dbo].[tb_Validation]
     [id] INT IDENTITY NOT NULL,
 	[name] VARCHAR(50)  NULL,
 	[validation]  VARCHAR(50) NOT NULL,	
+	[validationError] VARCHAR(250)NULL,
 	[lastModificationDate] DATETIME  NOT  NULL,
 	[lastModificationUser] INT  NOT NULL,
 	CONSTRAINT [PK_ID_tb_Validation] PRIMARY KEY CLUSTERED ([id] ASC)

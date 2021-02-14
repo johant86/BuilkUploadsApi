@@ -24,6 +24,7 @@ namespace builk_uploads_api.DataContext.Models
         public string type { set; get; }
         public int? idValidation { set; get; }
         public string validation { set; get; }
+        public string validationErrorMsg { set; get; }
         public int order { set; get; }
     }
 }

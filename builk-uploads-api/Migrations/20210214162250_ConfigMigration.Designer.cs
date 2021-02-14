@@ -10,7 +10,7 @@ using builk_uploads_api.DataContext;
 namespace builk_uploads_api.Migrations
 {
     [DbContext(typeof(DataConfigContext))]
-    [Migration("20210210004358_ConfigMigration")]
+    [Migration("20210214162250_ConfigMigration")]
     partial class ConfigMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -160,6 +160,9 @@ namespace builk_uploads_api.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("validation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("validationErrorMsg")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("id");

@@ -160,6 +160,9 @@ namespace builk_uploads_api.Migrations
                     b.Property<string>("validation")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("validationErrorMsg")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("id");
 
                     b.ToTable("tb_Validation");
