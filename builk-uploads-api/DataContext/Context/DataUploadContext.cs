@@ -2,8 +2,10 @@
 using builk_uploads_api.DataContext.Models;
 using builk_uploads_api.FileData.Domain;
 using builk_uploads_api.FileData.Domain.Factories;
+using builk_uploads_api.Resources;
 using builk_uploads_api.Utils;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,8 +18,11 @@ namespace builk_uploads_api.DataContext.Context
 {
     public class DataUploadContext : DbContext
     {
-        public DataUploadContext(DbContextOptions options) : base(options)
-        { }
+        private readonly IStringLocalizer<TranslateResources> _localizer;
+        public DataUploadContext(DbContextOptions options, IStringLocalizer<TranslateResources> localizer) : base(options)
+        {
+            this._localizer = localizer;
+        }
         private DbSet<DataUploaded> Data { get; set; }
 
         public UploadResult DataToUpload(string[,] documentData, SourceConfig configuration)
@@ -69,7 +74,7 @@ namespace builk_uploads_api.DataContext.Context
                                         {
                                             error = true;
                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                            $"The data {exelData} is not corresponds to the type of data valid for the {documentHeader}", j + 1, i + 1, Severity.Fatal);
+                                             _localizer["Thedata"] + exelData + _localizer["correspondsData"] + documentHeader, j + 1, i + 1, Severity.Fatal);
                                             result.errorDetails.Add(ErrorValidation);
                                         }
                                         break;
@@ -81,7 +86,7 @@ namespace builk_uploads_api.DataContext.Context
                                         {
                                             error = true;
                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                            $"The data {exelData} is not corresponds to the type of data valid for the {documentHeader}", j + 1, i + 1, Severity.Fatal);
+                                            _localizer["Thedata"] + exelData + _localizer["correspondsData"] + documentHeader, j + 1, i + 1, Severity.Fatal);
                                             result.errorDetails.Add(ErrorValidation);
                                         }
                                         break;
@@ -97,7 +102,7 @@ namespace builk_uploads_api.DataContext.Context
                                         {
                                             error = true;
                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                            $"The data {exelData} is not corresponds to the type of data valid for the {documentHeader}", j + 1, i + 1, Severity.Fatal);
+                                           _localizer["Thedata"] + exelData + _localizer["correspondsData"] + documentHeader, j + 1, i + 1, Severity.Fatal);
                                             result.errorDetails.Add(ErrorValidation);
                                         }
                                         break;

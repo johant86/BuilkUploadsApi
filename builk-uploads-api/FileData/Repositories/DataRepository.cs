@@ -5,34 +5,36 @@ using builk_uploads_api.DataContext.Entites;
 using builk_uploads_api.DataContext.Models;
 using builk_uploads_api.FileData.Domain;
 using builk_uploads_api.FileData.Domain.Factories;
+using builk_uploads_api.Resources;
 using builk_uploads_api.Settings;
 using builk_uploads_api.Shared.Repositories;
 using builk_uploads_api.Utils;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 
 namespace builk_uploads_api.FileData.Repositories
 {
     public class DataRepository : SPBaseRepository
     {
+        private readonly IStringLocalizer<TranslateResources> _localizer;
         private readonly List<string> _ValidFileFormats = new List<string>();
         private readonly DataConfigContext _DbContext;
 
-
-        public DataRepository(IOptions<AppSettings> appSettings, DataConfigContext dbContext) : base(appSettings)
+        public DataRepository(IOptions<AppSettings> appSettings, DataConfigContext dbContext, IStringLocalizer<TranslateResources> localizer) : base(appSettings)
         {
+            this._localizer = localizer;
             this._ValidFileFormats = this._AppSettings.AllowedFileFormats.ToList();
             this._DbContext = dbContext;
+     
         }
 
         public SaveDataResult SaveData(UploadRequest request)
@@ -46,9 +48,9 @@ namespace builk_uploads_api.FileData.Repositories
                     return new SaveDataResult
                     {
                         success = false,
-                        message = MessageDescription.Extension,
+                        message = _localizer[ErrorEnum.InvalidFileExtension.ToString()],
                         errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.InvalidFileExtension,
-                    Path.GetExtension(request.file.FileName),0,0,Severity.Fatal) }
+                       _localizer[ErrorEnum.InvalidFileExtension.ToString()] + " " + Path.GetExtension(request.file.FileName)+ " " + _localizer[ErrorEnum.InvalidFileExtensionDescription.ToString()],0,0,Severity.Fatal) }
                     };
                 }
                 else
@@ -97,9 +99,9 @@ namespace builk_uploads_api.FileData.Repositories
                                 return new SaveDataResult
                                 {
                                     success = false,
-                                    message = MessageDescription.ErrorConfigurations,
+                                    message = _localizer[ErrorEnum.ConfigurationNotFound.ToString()] ,
                                     errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.ColumnsNotFound,
-                                    "Columns configurations not found", 0, 0 , Severity.Fatal) }
+                                     _localizer[ErrorEnum.ColumnsConfigurationNotFound.ToString()], 0, 0 , Severity.Fatal) }
                                 };
                             }
 
@@ -121,9 +123,9 @@ namespace builk_uploads_api.FileData.Repositories
                             return new SaveDataResult
                             {
                                 success = false,
-                                message = MessageDescription.ErrorConfigurations,
+                                message = _localizer[ErrorEnum.ConfigurationNotFound.ToString()],
                                 errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.ConfigurationNotFound,
-                                    "Configurations not found", 0, 0 , Severity.Fatal) }
+                                    _localizer[ErrorEnum.ConfigurationNotFound.ToString()], 0, 0 , Severity.Fatal) }
                             };
                         }
 
@@ -136,7 +138,7 @@ namespace builk_uploads_api.FileData.Repositories
                                 {
                                     var optionsBuilder = new DbContextOptionsBuilder<DataUploadContext>();
                                     optionsBuilder.UseSqlServer(initialConfiguration.conectionString);
-                                    var _dbSource = new DataUploadContext(optionsBuilder.Options);
+                                    var _dbSource = new DataUploadContext(optionsBuilder.Options,this._localizer);
 
                                     UploadResult result = _dbSource.DataToUpload(data, initialConfiguration);
 
@@ -146,7 +148,7 @@ namespace builk_uploads_api.FileData.Repositories
                                         return new SaveDataResult
                                         {
                                             success = true,
-                                            message = MessageDescription.Uploaded,
+                                            message = _localizer[ErrorEnum.Uploaded.ToString()],
                                             errorDetails = { }
                                         };
                                     }
@@ -155,7 +157,7 @@ namespace builk_uploads_api.FileData.Repositories
                                         return new SaveDataResult
                                         {
                                             success = false,
-                                            message = MessageDescription.UploadError,
+                                            message = _localizer[ErrorEnum.UploadError.ToString()],
                                             errorDetails = result.errorDetails
                                         };
                                     }
@@ -165,8 +167,8 @@ namespace builk_uploads_api.FileData.Repositories
                                     return new SaveDataResult
                                     {
                                         success = false,
-                                        message = MessageDescription.InvalidConection,
-                                        errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.NotFoundConectionString, Path.GetExtension(request.file.FileName), 0, 0 ,Severity.Fatal) }
+                                        message = _localizer[ErrorEnum.InvalidConection.ToString()],
+                                        errorDetails = new List<ErrorDetails> { ErrorFactory.GetError(ErrorEnum.NotFoundConectionString, _localizer[ErrorEnum.InvalidConection.ToString()], 0, 0 ,Severity.Fatal) }
                                     };
                                 }
 
@@ -223,7 +225,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                         {
                                                             error = true;
                                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1,i+1, Severity.Fatal);
+                                                             _localizer["Thedata"] + data[i, j] + _localizer["correspondsData"] + documentHeader, j + 1,i+1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
                                                         break;
@@ -235,7 +237,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                         {
                                                             error = true;
                                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1,i+1, Severity.Fatal);
+                                                             _localizer["Thedata"] + data[i, j] + _localizer["correspondsData"] + documentHeader, j + 1,i+1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
                                                         break;
@@ -249,7 +251,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                         {
                                                             error = true;
                                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                            $"The data {data[i, j]} is not corresponds to the type of data valid for the {documentHeader}", j + 1,i+1, Severity.Fatal);
+                                                             _localizer["Thedata"] + data[i, j] + _localizer["correspondsData"] + documentHeader, j + 1,i+1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
                                                         break;
@@ -274,7 +276,7 @@ namespace builk_uploads_api.FileData.Repositories
                                 return new SaveDataResult
                                 {
                                     success = error ? false : true,
-                                    message = error ? MessageDescription.UploadError : rowsUploaded + " rows " + MessageDescription.Uploaded,
+                                    message = error ? _localizer[ErrorEnum.UploadError.ToString()] : rowsUploaded + " "+ _localizer[ErrorEnum.Uploaded.ToString()] + (rowsUploaded>1?"s " : " " )+ _localizer[ErrorEnum.Uploaded.ToString()],
                                     errorDetails = result.errorDetails
                                 };
 
@@ -286,7 +288,7 @@ namespace builk_uploads_api.FileData.Repositories
                             return new SaveDataResult
                             {
                                 success = false,
-                                message = ValidColumns.Find(x => x.errorCode == 7) != null ? MessageDescription.InvalidCulumnsNumber : MessageDescription.InvalidColumn,
+                                message = ValidColumns.Find(x => x.errorCode == 7) != null ? _localizer[ErrorEnum.InvalidCulumnsNumber.ToString()] : _localizer[ErrorEnum.InvalidColumn.ToString()],
                                 errorDetails = ValidColumns
                             };
                         }
@@ -332,7 +334,8 @@ namespace builk_uploads_api.FileData.Repositories
                     }
                     else
                     {
-                        var error = ErrorFactory.GetError(ErrorEnum.InvalidCulumnsNumber, $"The document has {headers.Count()} columns while the destination table has {sourceColumns.Count()}.", 0,0, Severity.Fatal);
+                        var error = ErrorFactory.GetError(ErrorEnum.InvalidCulumnsNumber, _localizer["The document has"] + " " +  headers.Count().ToString() + " "+
+                        _localizer["ColumnComparation"] + " " +  sourceColumns.Count().ToString(), 0,0, Severity.Fatal);
                         errorList.Add(error);
                     }
 

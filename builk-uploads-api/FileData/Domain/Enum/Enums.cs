@@ -9,7 +9,13 @@
     InvalidCulumnsNumber,
     InvalidData,
     ColumnsNotFound,
-    ConfigurationNotFound
+    ConfigurationNotFound,
+    InvalidFileExtensionDescription,
+    ColumnsConfigurationNotFound,
+    Uploaded,
+    UploadError,
+    InvalidConection,
+    InvalidColumn
 }
 
 

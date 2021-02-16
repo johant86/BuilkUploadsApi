@@ -77,3 +77,10 @@ C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\obj\Deb
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\obj\Debug\netcoreapp3.1\builk-uploads-api.dll
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\obj\Debug\netcoreapp3.1\builk-uploads-api.pdb
 C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\obj\Debug\netcoreapp3.1\builk-uploads-api.genruntimeconfig.cache
+C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\en\builk-uploads-api.resources.dll
+C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\bin\Debug\netcoreapp3.1\es\builk-uploads-api.resources.dll
+C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\obj\Debug\netcoreapp3.1\builk_uploads_api.Resources.TranslateResources.en.resources
+C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\obj\Debug\netcoreapp3.1\builk_uploads_api.Resources.TranslateResources.es.resources
+C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\obj\Debug\netcoreapp3.1\builk-uploads-api.csproj.GenerateResource.cache
+C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\obj\Debug\netcoreapp3.1\en\builk-uploads-api.resources.dll
+C:\Users\jvivas\Desktop\Sprofesional\builk-uploads-api\builk-uploads-api\obj\Debug\netcoreapp3.1\es\builk-uploads-api.resources.dll

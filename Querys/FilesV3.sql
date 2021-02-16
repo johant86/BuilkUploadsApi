@@ -34,7 +34,7 @@ CREATE TABLE [dbo].[tb_Validation]
     [id] INT IDENTITY NOT NULL,
 	[name] VARCHAR(50)  NULL,
 	[validation]  VARCHAR(50) NOT NULL,	
-	[validationError] VARCHAR(250)NULL,
+	[validationErrorMsg] VARCHAR(250)NULL,
 	[lastModificationDate] DATETIME  NOT  NULL,
 	[lastModificationUser] INT  NOT NULL,
 	CONSTRAINT [PK_ID_tb_Validation] PRIMARY KEY CLUSTERED ([id] ASC)
@@ -172,9 +172,20 @@ INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'RAF','[dbo].[tb_Document]'
 INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]','Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;',NULL,NULL,GETDATE(),1);
 INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFTNotifier',NULL,NULL,'http://lamazdev005/tools/RAFT','RAFTNotifier',GETDATE(),1);
 
-INSERT INTO [dbo].[tb_Validation] VALUES ('Phone validation','Phone',GETDATE(),1)
-INSERT INTO [dbo].[tb_Validation] VALUES ('Identification validation','Identification',GETDATE(),1)
-INSERT INTO [dbo].[tb_Validation] VALUES ('Email validation','Email',GETDATE(),1)
+INSERT INTO [dbo].[tb_Validation] VALUES ('Phone validation','^([0-9]){8,8}$','INVALID PHONE',GETDATE(),1)
+INSERT INTO [dbo].[tb_Validation] VALUES ('Identification validation','^([0-9]){8,15}$','INVALID DB IDENTIFICATION',GETDATE(),1)
+INSERT INTO [dbo].[tb_Validation] VALUES ('Email validation','\\w+([-+.'']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*','Invalid mail data',GETDATE(),1)
+
+
+
+--SELECT  * FROM  [dbo].[tb_Validation]
+
+DELETE [dbo].[tb_Validation]
+DBCC CHECKIDENT ('[dbo].[tb_Validation]', RESEED, 0)  
+DBCC CHECKIDENT ('[dbo].[tb_Validation]')
+
+UPDATE  [dbo].[tb_Validation] SET validation='^([0-9]){8,15}$' where id=2
+
 
 INSERT INTO [dbo].[tb_DataType] VALUES ('string','string',GETDATE(),1)
 INSERT INTO [dbo].[tb_DataType] VALUES ('int','integer',GETDATE(),1)

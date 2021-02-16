@@ -13,7 +13,7 @@ namespace builk_uploads_api.FileData.Domain.Factories
                 case ErrorEnum.InvalidFileExtension:
                     return new ErrorDetails
                     {
-                        error = $"The file extension {error} is not valid, please check extension specifications and try again",
+                        error = error,
                         //columnNumber = column,
                         position = col!=0 ? alpha[col-1].ToString()+ row : "-",
                         errorCode = (int)ErrorCodesEnum.Extension,
@@ -34,7 +34,7 @@ namespace builk_uploads_api.FileData.Domain.Factories
                 case ErrorEnum.NotFoundConectionString:
                     return new ErrorDetails
                     {
-                        error = $"Not found conection string",
+                        error = error,
                         //columnNumber = 0,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         errorCode = (int)ErrorCodesEnum.InvalidConection,

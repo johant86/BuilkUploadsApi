@@ -3,11 +3,15 @@ using builk_uploads_api.FileData.Repositories;
 using builk_uploads_api.Settings;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace builk_uploads_api
 {
@@ -24,6 +28,20 @@ namespace builk_uploads_api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddScoped<DataRepository>();
+            services.AddLocalization();
+            services.Configure<RequestLocalizationOptions>(
+               options =>
+               {
+                   var supportedCultures = new List<CultureInfo>
+                   {
+                        new CultureInfo("en"),
+                        new CultureInfo("es")
+                   };
+
+                   options.DefaultRequestCulture = new RequestCulture(culture: "en", uiCulture: "en");
+                   options.SupportedCultures = supportedCultures;
+                   options.SupportedUICultures = supportedCultures;
+               });
 
 
             string conexion = Configuration["ConnectionStrings:FileDataUploadDB"].ToString();
@@ -88,7 +106,8 @@ namespace builk_uploads_api
             app.UseRouting();
 
             app.UseAuthorization();
-
+            var localizeOptions = app.ApplicationServices.GetService<IOptions<RequestLocalizationOptions>>();
+            app.UseRequestLocalization(localizeOptions.Value);
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

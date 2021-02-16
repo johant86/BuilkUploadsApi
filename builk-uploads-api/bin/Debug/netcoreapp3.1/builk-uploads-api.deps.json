@@ -323,6 +323,14 @@
         "runtime": {
           "builk-uploads-api.dll": {}
         },
+        "resources": {
+          "en/builk-uploads-api.resources.dll": {
+            "locale": "en"
+          },
+          "es/builk-uploads-api.resources.dll": {
+            "locale": "es"
+          }
+        },
         "compile": {
           "builk-uploads-api.dll": {}
         }
