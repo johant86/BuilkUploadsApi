@@ -127,7 +127,7 @@
     <value>Configuration not found.</value>
   </data>
   <data name="correspondsData" xml:space="preserve">
-    <value> does not correspond to the type of data valid for the column </value>
+    <value>does not correspond to the type of data valid for the column</value>
   </data>
   <data name="InvalidColumn" xml:space="preserve">
     <value>Column name Error.</value>
@@ -144,14 +144,20 @@
   <data name="InvalidFileExtensionDescription" xml:space="preserve">
     <value>is not valid, please check extension specifications and try again.</value>
   </data>
+  <data name="NotMatch" xml:space="preserve">
+    <value>do not match the document settings, please check the column name.</value>
+  </data>
   <data name="row" xml:space="preserve">
     <value>row</value>
   </data>
   <data name="The document has" xml:space="preserve">
     <value>The document has</value>
   </data>
+  <data name="TheColumn" xml:space="preserve">
+    <value>The column</value>
+  </data>
   <data name="Thedata" xml:space="preserve">
-    <value>The data </value>
+    <value>The data</value>
   </data>
   <data name="Uploaded" xml:space="preserve">
     <value>Uploaded successfully.</value>

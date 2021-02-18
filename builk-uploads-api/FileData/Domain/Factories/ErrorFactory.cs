@@ -14,7 +14,6 @@ namespace builk_uploads_api.FileData.Domain.Factories
                     return new ErrorDetails
                     {
                         error = error,
-                        //columnNumber = column,
                         position = col!=0 ? alpha[col-1].ToString()+ row : "-",
                         errorCode = (int)ErrorCodesEnum.Extension,
                         errorDate = DateTime.Now.ToShortDateString(),
@@ -23,8 +22,8 @@ namespace builk_uploads_api.FileData.Domain.Factories
                 case ErrorEnum.InvalidAlias:
                     return new ErrorDetails
                     {
-                        error = $"The alias {error} was not found, please try again and use a valid alias configiration name",
-                        //columnNumber = 0,
+                       // error = $"The alias {error} was not found, please try again and use a valid alias configiration name",
+                       error=error,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         errorCode = (int)ErrorCodesEnum.Alias,
                         errorDate = DateTime.Now.ToShortDateString(),
@@ -35,7 +34,6 @@ namespace builk_uploads_api.FileData.Domain.Factories
                     return new ErrorDetails
                     {
                         error = error,
-                        //columnNumber = 0,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         errorCode = (int)ErrorCodesEnum.InvalidConection,
                         errorDate = DateTime.Now.ToShortDateString(),
@@ -45,8 +43,7 @@ namespace builk_uploads_api.FileData.Domain.Factories
                 case ErrorEnum.InvalidColumns:
                     return new ErrorDetails
                     {
-                        error = $"the column {error} do not match the document settings, please check the column name.",
-                        //columnNumber = column,
+                        error=error,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         errorCode = (int)ErrorCodesEnum.InvalidColumn,
                         errorDate = DateTime.Now.ToShortDateString(),
@@ -57,7 +54,6 @@ namespace builk_uploads_api.FileData.Domain.Factories
                     return new ErrorDetails
                     {
                         error = error,
-                        //columnNumber = column,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         errorCode = (int)ErrorCodesEnum.Datatype,
                         errorDate = DateTime.Now.ToShortDateString(),
@@ -68,7 +64,6 @@ namespace builk_uploads_api.FileData.Domain.Factories
                     return new ErrorDetails
                     {
                         error = error,
-                        //columnNumber = column,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         errorCode = (int)ErrorCodesEnum.InvalidCulumnsNumber,
                         errorDate = DateTime.Now.ToShortDateString(),
@@ -79,7 +74,6 @@ namespace builk_uploads_api.FileData.Domain.Factories
                     return new ErrorDetails
                     {
                         error = error,
-                        //columnNumber = column,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         errorCode = (int)ErrorCodesEnum.InvalidData,
                         errorDate = DateTime.Now.ToShortDateString(),
@@ -90,7 +84,6 @@ namespace builk_uploads_api.FileData.Domain.Factories
                     return new ErrorDetails
                     {
                         error = error,
-                        //columnNumber = column,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         errorCode = (int)ErrorCodesEnum.ColumnsNotFound,
                         errorDate = DateTime.Now.ToShortDateString(),
@@ -101,7 +94,6 @@ namespace builk_uploads_api.FileData.Domain.Factories
                     return new ErrorDetails
                     {
                         error = error,
-                        //columnNumber = column,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         errorCode = (int)ErrorCodesEnum.ConfigurationNotFound,
                         errorDate = DateTime.Now.ToShortDateString(),
@@ -111,7 +103,6 @@ namespace builk_uploads_api.FileData.Domain.Factories
                 default:
                     return new ErrorDetails
                     {
-                        //columnNumber = 0,
                         position = col != 0 ? alpha[col - 1].ToString() + row : "-",
                         error = "",
                         errorCode = 10,

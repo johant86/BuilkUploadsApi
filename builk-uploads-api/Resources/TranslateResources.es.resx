@@ -127,10 +127,10 @@
     <value>Configuración no encontrada.</value>
   </data>
   <data name="correspondsData" xml:space="preserve">
-    <value> no corresponde al tipo de dato valido para la columna </value>
+    <value>no corresponde al tipo de dato valido para la columna</value>
   </data>
   <data name="InvalidColumn" xml:space="preserve">
-    <value>Error de nombre de columna.</value>
+    <value>Error en el nombre de la columna.</value>
   </data>
   <data name="InvalidConection" xml:space="preserve">
     <value>conexión invalida.</value>
@@ -144,14 +144,20 @@
   <data name="InvalidFileExtensionDescription" xml:space="preserve">
     <value>no es valida, por favor revise las especificaciones y inténtelo de nuevo.</value>
   </data>
+  <data name="NotMatch" xml:space="preserve">
+    <value>no coincide con las configuraciones del documento, por favor verifique el nombre de la columna.</value>
+  </data>
   <data name="row" xml:space="preserve">
     <value>fila</value>
   </data>
   <data name="The document has" xml:space="preserve">
     <value>El documento tiene</value>
   </data>
+  <data name="TheColumn" xml:space="preserve">
+    <value>La columna</value>
+  </data>
   <data name="Thedata" xml:space="preserve">
-    <value>El dato </value>
+    <value>El dato</value>
   </data>
   <data name="Uploaded" xml:space="preserve">
     <value>Carga completada.</value>

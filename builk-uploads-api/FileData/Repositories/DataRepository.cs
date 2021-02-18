@@ -225,7 +225,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                         {
                                                             error = true;
                                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                             _localizer["Thedata"] + data[i, j] + _localizer["correspondsData"] + documentHeader, j + 1,i+1, Severity.Fatal);
+                                                             _localizer["Thedata"] +" "+ data[i, j] + " " + _localizer["correspondsData"]+ " " + documentHeader, j + 1,i+1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
                                                         break;
@@ -237,7 +237,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                         {
                                                             error = true;
                                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                             _localizer["Thedata"] + data[i, j] + _localizer["correspondsData"] + documentHeader, j + 1,i+1, Severity.Fatal);
+                                                             _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
                                                         break;
@@ -251,7 +251,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                         {
                                                             error = true;
                                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                             _localizer["Thedata"] + data[i, j] + _localizer["correspondsData"] + documentHeader, j + 1,i+1, Severity.Fatal);
+                                                             _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
                                                         break;
@@ -276,7 +276,7 @@ namespace builk_uploads_api.FileData.Repositories
                                 return new SaveDataResult
                                 {
                                     success = error ? false : true,
-                                    message = error ? _localizer[ErrorEnum.UploadError.ToString()] : rowsUploaded + " "+ _localizer[ErrorEnum.Uploaded.ToString()] + (rowsUploaded>1?"s " : " " )+ _localizer[ErrorEnum.Uploaded.ToString()],
+                                    message = error ? _localizer[ErrorEnum.UploadError.ToString()] : rowsUploaded + " " + _localizer[ErrorEnum.Uploaded.ToString()] + (rowsUploaded>1?"s " : " " )+ _localizer[ErrorEnum.Uploaded.ToString()],
                                     errorDetails = result.errorDetails
                                 };
 
@@ -326,7 +326,7 @@ namespace builk_uploads_api.FileData.Repositories
                             if (c == null)
                             {
                                 var error = ErrorFactory.GetError(ErrorEnum.InvalidColumns,
-                                    item, headers.IndexOf(item) + 1,0, Severity.Fatal);
+                                   _localizer["TheColumn"] + " " + item+ " " + _localizer["NotMatch"], 0,0, Severity.Fatal);
                                 errorList.Add(error);
                             }
 

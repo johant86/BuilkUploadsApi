@@ -74,7 +74,7 @@ namespace builk_uploads_api.DataContext.Context
                                         {
                                             error = true;
                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                             _localizer["Thedata"] + exelData + _localizer["correspondsData"] + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                             _localizer["Thedata"] + " " + exelData + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
                                             result.errorDetails.Add(ErrorValidation);
                                         }
                                         break;
@@ -86,7 +86,7 @@ namespace builk_uploads_api.DataContext.Context
                                         {
                                             error = true;
                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                            _localizer["Thedata"] + exelData + _localizer["correspondsData"] + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                             _localizer["Thedata"] + " " + exelData + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
                                             result.errorDetails.Add(ErrorValidation);
                                         }
                                         break;
@@ -102,7 +102,7 @@ namespace builk_uploads_api.DataContext.Context
                                         {
                                             error = true;
                                             ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                           _localizer["Thedata"] + exelData + _localizer["correspondsData"] + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                             _localizer["Thedata"] + " " + exelData + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
                                             result.errorDetails.Add(ErrorValidation);
                                         }
                                         break;
