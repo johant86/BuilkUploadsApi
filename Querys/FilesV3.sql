@@ -89,13 +89,13 @@ INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (1,'Example2','[tb_Example2]',
 INSERT INTO [dbo].[tb_SourceConfiguration] VALUES (2,'RAFTNotifier',NULL,NULL,'http://lamazdev005/tools/RAFT','RAFTNotifier',GETDATE(),1);
 
 ---------------------FIRST TABLE------------------------------------------------------------------
-INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'RAFTID','Raftid',NULL,1,GETDATE(),1)
-INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'TokenUsed','TokenUsed',NULL,3,GETDATE(),1)
-INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'Token','Token',NULL,1,GETDATE(),1)
-INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'ResponseInfo','ResponseInfo',NULL,1,GETDATE(),1)
-INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'Phone','Phone',1,1,GETDATE(),1)
-INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'Email','Email',3,1,GETDATE(),1)
-INSERT INTO [dbo].[tb_ColumnsBySource] VALUES (1,'Identification','Identification',2,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'RAFTID','Raftid',NULL,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'TokenUsed','TokenUsed',NULL,3,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'Token','Token',NULL,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'ResponseInfo','ResponseInfo',NULL,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'Phone','Phone',1,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'Email','Email',3,1,GETDATE(),1)
+INSERT INTO [dbo].[tb_ColumnBySource] VALUES (1,'Identification','Identification',2,1,GETDATE(),1)
 ---------------------SECUND TABLE---------------------------------------------
 INSERT INTO [dbo].[tb_ColumnBySource] VALUES (2,'date','date',NULL,4,GETDATE(),1)
 INSERT INTO [dbo].[tb_ColumnBySource] VALUES (2,'makeup','makeup',NULL,2,GETDATE(),1)
@@ -178,13 +178,13 @@ INSERT INTO [dbo].[tb_Validation] VALUES ('Email validation','\\w+([-+.'']\\w+)*
 
 
 
---SELECT  * FROM  [dbo].[tb_Validation]
+SELECT  * FROM  [dbo].[tb_Validation]
 
 DELETE [dbo].[tb_Validation]
 DBCC CHECKIDENT ('[dbo].[tb_Validation]', RESEED, 0)  
 DBCC CHECKIDENT ('[dbo].[tb_Validation]')
 
-UPDATE  [dbo].[tb_Validation] SET validation='^([0-9]){8,15}$' where id=2
+--UPDATE  [dbo].[tb_SourceConfiguration] SET conectionString='Server=(LocalDB)\LocalDB;Database=Test_DB;User Id=sa;Password=123456;' where id=1
 
 
 INSERT INTO [dbo].[tb_DataType] VALUES ('string','string',GETDATE(),1)
