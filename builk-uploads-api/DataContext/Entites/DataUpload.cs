@@ -11,9 +11,15 @@ namespace builk_uploads_api.DataContext.Entites
         public int id { set; get; }
     }
 
+    public class DataIdentifer
+    {
+        [Key]
+        public string id { set; get; }
+    }
     public class UploadResult
     {
         public int RowsInserted { set; get; }
+        public int RowsUpdated { set; get; }
         public List<ErrorDetails> errorDetails { set; get; }
     }
 }

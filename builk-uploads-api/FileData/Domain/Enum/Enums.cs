@@ -15,7 +15,8 @@
     Uploaded,
     UploadError,
     InvalidConection,
-    InvalidColumn
+    InvalidColumn,
+    PrimaryKeyError
 }
 
 
@@ -30,7 +31,8 @@ public enum ErrorCodesEnum
     InvalidCulumnsNumber = 7,
     InvalidData = 8,
     ColumnsNotFound=9,
-    ConfigurationNotFound=10
+    ConfigurationNotFound=10,
+    PrimaryKeyError=11
 }
 
 public enum DataSource

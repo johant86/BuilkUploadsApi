@@ -147,8 +147,26 @@
   <data name="NotMatch" xml:space="preserve">
     <value>no coincide con las configuraciones del documento, por favor verifique el nombre de la columna.</value>
   </data>
+  <data name="PluralInsertedData" xml:space="preserve">
+    <value>datos insertados</value>
+  </data>
+  <data name="PluralUpdatedData" xml:space="preserve">
+    <value>datos actualizados</value>
+  </data>
+  <data name="PrimaryKeyError" xml:space="preserve">
+    <value>Error de identificador unico.</value>
+  </data>
+  <data name="PrimaryKeyErrorDescrip" xml:space="preserve">
+    <value>La llave primaria no fue encontrada en el documento.</value>
+  </data>
   <data name="row" xml:space="preserve">
     <value>fila</value>
+  </data>
+  <data name="SingularInsertedData" xml:space="preserve">
+    <value>dato insertado</value>
+  </data>
+  <data name="SingularUpdatedData" xml:space="preserve">
+    <value>dato actualizado</value>
   </data>
   <data name="The document has" xml:space="preserve">
     <value>El documento tiene</value>
@@ -160,7 +178,7 @@
     <value>El dato</value>
   </data>
   <data name="Uploaded" xml:space="preserve">
-    <value>Carga completada.</value>
+    <value>Carga completada,</value>
   </data>
   <data name="UploadError" xml:space="preserve">
     <value>Fallo en la carga de datos.</value>

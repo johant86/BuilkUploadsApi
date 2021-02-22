@@ -11,12 +11,14 @@ using builk_uploads_api.Shared.Repositories;
 using builk_uploads_api.Utils;
 using ExcelDataReader;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -59,7 +61,7 @@ namespace builk_uploads_api.FileData.Repositories
                     if (request != null)
                     {
                         string[,] data = this.ReadFile(request.file);
-
+               
                         SourceConfig initialConfiguration = new SourceConfig();
                         var configSorce = (from s in this._DbContext.tb_Source
                                            join c in this._DbContext.tb_SourceConfiguration on s.id equals c.Source.id
@@ -91,7 +93,8 @@ namespace builk_uploads_api.FileData.Repositories
                                                type = dt.name,
                                                validation = v.validation,
                                                idValidation = v.id,
-                                               validationErrorMsg= v.validationErrorMsg
+                                               validationErrorMsg= v.validationErrorMsg,
+                                               isIdentifier=cs.isIdentifier
 
                                            }).ToList();
                             if (columns.Count() == 0)
@@ -140,15 +143,17 @@ namespace builk_uploads_api.FileData.Repositories
                                     optionsBuilder.UseSqlServer(initialConfiguration.conectionString);
                                     var _dbSource = new DataUploadContext(optionsBuilder.Options,this._localizer);
 
+                                   
                                     UploadResult result = _dbSource.DataToUpload(data, initialConfiguration);
 
 
-                                    if (result.RowsInserted > 0)
+                                    if (result.RowsInserted > 0 || result.RowsUpdated > 0)
                                     {
                                         return new SaveDataResult
                                         {
                                             success = true,
-                                            message = _localizer[ErrorEnum.Uploaded.ToString()],
+                                            message = _localizer[ErrorEnum.Uploaded.ToString()] + " " + (result.RowsUpdated == 1 ? result.RowsUpdated + " " + _localizer["SingularUpdatedData"] : result.RowsUpdated > 1 ? result.RowsUpdated + " " + _localizer["PluralUpdatedData"] : "") +
+                                            (result.RowsInserted == 1 ? (result.RowsUpdated <= 0 ? " ": ", ") + result.RowsInserted + " " + _localizer["SingularInsertedData"]  : result.RowsInserted > 1 ? (result.RowsUpdated <= 0 ? "" : ", ") + result.RowsInserted + " " + _localizer["PluralInsertedData"] : ""),
                                             errorDetails = { }
                                         };
                                     }
@@ -288,7 +293,8 @@ namespace builk_uploads_api.FileData.Repositories
                             return new SaveDataResult
                             {
                                 success = false,
-                                message = ValidColumns.Find(x => x.errorCode == 7) != null ? _localizer[ErrorEnum.InvalidCulumnsNumber.ToString()] : _localizer[ErrorEnum.InvalidColumn.ToString()],
+                                message = ValidColumns.Find(x => x.errorCode == 7) != null ? _localizer[ErrorEnum.InvalidCulumnsNumber.ToString()] :
+                                (ValidColumns.Find(x => x.errorCode == 6) != null ?_localizer[ErrorEnum.InvalidColumn.ToString()] : _localizer[ErrorEnum.PrimaryKeyError.ToString()]) ,
                                 errorDetails = ValidColumns
                             };
                         }
@@ -315,6 +321,18 @@ namespace builk_uploads_api.FileData.Repositories
                     string header = fileColumns[0, i];
                     headers.Add(header);
                 }
+
+                var validatePrimary = sourceColumns.Find(x => x.isIdentifier==true);
+                var finderDocPrimaryKey = headers.Find(x => x.ToUpper() == validatePrimary.filecolumnName.ToUpper());
+
+
+                if (finderDocPrimaryKey==null)
+                {
+                    var error = ErrorFactory.GetError(ErrorEnum.PrimaryKeyError, _localizer["PrimaryKeyErrorDescrip"], 0, 0, Severity.Fatal);
+                    errorList.Add(error);
+                    return errorList;
+                }
+
 
                 if (headers.Count() > 0)
                 {

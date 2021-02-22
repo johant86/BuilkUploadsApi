@@ -4,6 +4,7 @@ using builk_uploads_api.FileData.Domain;
 using builk_uploads_api.FileData.Domain.Factories;
 using builk_uploads_api.Resources;
 using builk_uploads_api.Utils;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 using Newtonsoft.Json;
@@ -25,20 +26,45 @@ namespace builk_uploads_api.DataContext.Context
         }
         private DbSet<DataUploaded> Data { get; set; }
 
+      
+
         public UploadResult DataToUpload(string[,] documentData, SourceConfig configuration)
         {
+
             try
             {
+                var primaryColumn = configuration.Columns.Find(x => x.isIdentifier == true);
+                SqlConnection sqlCnn = new SqlConnection(configuration.conectionString);
+                List<string> primariesColumns = new List<string> ();
+
+                sqlCnn.Open();
+                SqlCommand sqlCmd = new SqlCommand($"SELECT  *  FROM  {configuration.tableName}", sqlCnn);
+                SqlDataReader sqlReader = sqlCmd.ExecuteReader();
+                while (sqlReader.Read())
+                {
+                    primariesColumns.Add(sqlReader.GetValue(primaryColumn.columnName).ToString());
+                }
+                sqlReader.Close();
+                sqlCmd.Dispose();
+                //sqlCnn.Close();
+
                 Columns columnConfig = new Columns();
                 UploadResult result = new UploadResult();
                 result.errorDetails = new List<ErrorDetails>();
                 List<string> querys = new List<string>();
                 bool error = false;
                 int dataUpload = 0;
+                int RowsUpdated = 0;
+                bool toUpdate = false;
+
 
                 for (int i = 0; i < documentData.GetLength(0); i++)
                 {
+                    toUpdate = false;
                     var query = string.Empty;
+                    var updateQuery = string.Empty;
+                    var fieldToUpdate = string.Empty;
+                    updateQuery = $"UPDATE  {configuration.tableName} SET ";
                     query += $"INSERT INTO  {configuration.tableName}  VALUES (";
                     for (int j = 0; j < documentData.GetLength(1); j++)
                     {
@@ -47,6 +73,13 @@ namespace builk_uploads_api.DataContext.Context
                             var documentHeader = documentData[0, j];
                             columnConfig = configuration.Columns.Find(x => x.filecolumnName.ToUpper() == documentHeader.ToUpper());
                             var exelData = documentData[i, j];
+                            var fieldTo = primariesColumns.Find(x=>x==exelData);
+
+                            if (fieldTo != null)
+                            {
+                                fieldToUpdate = ValidateType(columnConfig.type,fieldTo);
+                                toUpdate = true;
+                            }
 
                             if (columnConfig != null && exelData != null)
                             {
@@ -69,7 +102,12 @@ namespace builk_uploads_api.DataContext.Context
                                         int num;
                                         bool IsInt = Int32.TryParse(exelData, out num);
                                         if (IsInt)
-                                            query += $"{Int32.Parse(exelData)}" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                        {
+                                            if (!toUpdate)
+                                                query += $"{Int32.Parse(exelData)}" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                            else
+                                                 updateQuery += $"{columnConfig.columnName}={Int32.Parse(exelData)}" + (documentData.GetLength(1) - 1 == j ? "" : ",") + "";                           
+                                        }
                                         else
                                         {
                                             error = true;
@@ -81,7 +119,12 @@ namespace builk_uploads_api.DataContext.Context
                                     case variablesType.Boolean:
                                         bool IsBool = Boolean.TryParse(exelData, out IsBool);
                                         if (IsBool)
-                                            query += $"{(Convert.ToBoolean(exelData) == true ? 1 : 0)}" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                        {
+                                            if (!toUpdate)
+                                                query += $"{(Convert.ToBoolean(exelData) == true ? 1 : 0)}" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                            else
+                                                updateQuery += $"{columnConfig.columnName}={(Convert.ToBoolean(exelData) == true ? 1 : 0)}" + (documentData.GetLength(1) - 1 == j ? "" : ",") + "";
+                                        }
                                         else
                                         {
                                             error = true;
@@ -91,13 +134,22 @@ namespace builk_uploads_api.DataContext.Context
                                         }
                                         break;
                                     case variablesType.Decimal:
-                                        query += $"{Convert.ToDecimal(exelData)}" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                        if (!toUpdate)
+                                            query += $"{Convert.ToDecimal(exelData)}" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                        else
+                                            updateQuery += $"{columnConfig.columnName}={Convert.ToDecimal(exelData)}" + (documentData.GetLength(1) - 1 == j ? "" : ",") + "";
+                                           
                                         break;
                                     case variablesType.Datetime:
                                         DateTime date;
                                         bool IsDate = DateTime.TryParse(exelData, out date);
                                         if (IsDate)
-                                            query += $"CONVERT (DATETIME, '{Convert.ToDateTime(exelData)}', 103)" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                        {
+                                            if (!toUpdate)
+                                                query += $"CONVERT (DATETIME, '{Convert.ToDateTime(exelData)}', 103)" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                            else
+                                                updateQuery += $"{columnConfig.columnName}= CONVERT (DATETIME, '{Convert.ToDateTime(exelData)}', 103)" + (documentData.GetLength(1) - 1 == j ? "" : ",") + "";
+                                        }
                                         else
                                         {
                                             error = true;
@@ -107,17 +159,37 @@ namespace builk_uploads_api.DataContext.Context
                                         }
                                         break;
                                     default:
-                                        query += $"'{exelData}'" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                        if (!toUpdate)
+                                            query += $"'{exelData}'" + (documentData.GetLength(1) - 1 == j ? ");" : ",") + "";
+                                        else                                     
+                                            updateQuery += $"{columnConfig.columnName}='{exelData}'" + (documentData.GetLength(1) - 1 == j ? "" : ",") + "";                                      
+
                                         break;
                                 };
                             }
 
                         }
                     }
-                    if (i > 0 && query.Contains(");"))
+                    if (i > 0)
                     {
+                        if(query.Contains(");"))
                         querys.Add(query);
+                        if (updateQuery.Contains(","))
+                        {
+                            updateQuery += $" WHERE {primaryColumn.columnName}={fieldToUpdate}";
+                            //var idRegister = this.Data.FromSqlRaw($"{updateQuery} SELECT MAX(id) AS id FROM {configuration.tableName}").AsEnumerable<DataUploaded>().FirstOrDefault();
+                            sqlCmd = new SqlCommand($"{updateQuery} SELECT *  FROM {configuration.tableName} WHERE {primaryColumn.columnName}={fieldToUpdate}", sqlCnn);
+                            sqlReader = sqlCmd.ExecuteReader();
+                            while (sqlReader.Read())
+                            {
+                                RowsUpdated++;
+                                var identiferUpdated = sqlReader.GetValue(primaryColumn.columnName);
+                            }
+                            sqlReader.Close();
+                            sqlCmd.Dispose();
+                        }
                     }
+
                 }
 
                 if (querys.Count > 0 && !error)
@@ -130,8 +202,9 @@ namespace builk_uploads_api.DataContext.Context
                     }
 
                 }
-
+                sqlCnn.Close();
                 result.RowsInserted = dataUpload;
+                result.RowsUpdated = RowsUpdated;
                 return result;
             }
             catch (Exception ex)
@@ -142,7 +215,7 @@ namespace builk_uploads_api.DataContext.Context
 
         }
 
-        public bool ValidateType(string type, string value)
+        public string ValidateType(string type, string value)
         {
 
             switch (type)
@@ -150,56 +223,34 @@ namespace builk_uploads_api.DataContext.Context
                 case variablesType.Boolean:
                     bool IsBool = Boolean.TryParse(value, out IsBool);
                     if (IsBool)
-                        return IsBool;
+                        return $"{(Convert.ToBoolean(value) == true ? 1 : 0)}";
                     break;
                 case variablesType.Int:
                     int num;
                     bool IsInt = Int32.TryParse(value, out num);
                     if (IsInt)
-                        return true;
+                        return $"{Int32.Parse(value)}";
                     break;
                 case variablesType.Datetime:
                     DateTime date;
                     bool IsDate = DateTime.TryParse(value, out date);
                     if (IsDate)
-                        return true;
+                        return $"CONVERT (DATETIME, '{Convert.ToDateTime(value)}', 103)";
                     break;
             }
 
-            return false;
+            return $"'{value}'";
         }
 
 
         public bool ValidateColumn(string validation, string value)
         {  
-                   // var expresion = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
                     if (Regex.IsMatch(value, validation))
                         return true;
                   
             return false;
         }
 
-        public bool ValidateColumnById(int idValidation, string value)
-        {
-            switch (idValidation)
-            {
-                case (int)ValidationsEnum.Phone:
-                    if (value.Trim().Length == 8)
-                        return true;
-                    break;
-                case (int)ValidationsEnum.Identification:
-                    if (value.Trim().Length >= 9 && value.Trim().Length <= 21)
-                        return true;
-                    break;
-                case (int)ValidationsEnum.Email:
-                    var expresion = "\\w+([-+.']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*";
-                    if (Regex.IsMatch(value, expresion))
-                        return true;
-                    break;
-            }
-
-            return false;
-        }
-
+        
     }
 }

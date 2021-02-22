@@ -100,6 +100,17 @@ namespace builk_uploads_api.FileData.Domain.Factories
                         severity = severity
                     };
 
+
+                case ErrorEnum.PrimaryKeyError:
+                    return new ErrorDetails
+                    {
+                        error = error,
+                        position = col != 0 ? alpha[col - 1].ToString() + row : "-",
+                        errorCode = (int)ErrorCodesEnum.PrimaryKeyError,
+                        errorDate = DateTime.Now.ToShortDateString(),
+                        severity = severity
+                    };
+
                 default:
                     return new ErrorDetails
                     {

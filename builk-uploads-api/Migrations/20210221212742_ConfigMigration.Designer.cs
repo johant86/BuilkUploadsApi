@@ -10,7 +10,7 @@ using builk_uploads_api.DataContext;
 namespace builk_uploads_api.Migrations
 {
     [DbContext(typeof(DataConfigContext))]
-    [Migration("20210214162250_ConfigMigration")]
+    [Migration("20210221212742_ConfigMigration")]
     partial class ConfigMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -42,6 +42,9 @@ namespace builk_uploads_api.Migrations
 
                     b.Property<string>("filecolumnName")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("isIdentifier")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime>("lastModificationDate")
                         .HasColumnType("datetime2");

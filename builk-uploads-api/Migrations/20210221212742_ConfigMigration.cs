@@ -92,6 +92,7 @@ namespace builk_uploads_api.Migrations
                     columnName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Validationid = table.Column<int>(type: "int", nullable: true),
                     DataTypeid = table.Column<int>(type: "int", nullable: true),
+                    isIdentifier = table.Column<bool>(type: "bit", nullable: false),
                     lastModificationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     lastModificationUser = table.Column<int>(type: "int", nullable: false)
                 },

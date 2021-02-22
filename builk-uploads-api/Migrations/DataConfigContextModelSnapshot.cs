@@ -41,6 +41,9 @@ namespace builk_uploads_api.Migrations
                     b.Property<string>("filecolumnName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("isIdentifier")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime>("lastModificationDate")
                         .HasColumnType("datetime2");
 

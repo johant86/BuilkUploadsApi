@@ -46,6 +46,7 @@ namespace builk_uploads_api.DataContext.Entites
         public string columnName { set; get; }
         public virtual Validation Validation { set; get; }
         public virtual DataType DataType { set; get; }
+        public bool isIdentifier { set; get; }
         public DateTime lastModificationDate { set; get; }
         public int lastModificationUser { set; get; }
     }
