@@ -184,15 +184,33 @@ namespace builk_uploads_api.FileData.Repositories
                                 result.errorDetails = new List<ErrorDetails>();
                                 bool error = false;
                                 int rowsUploaded = 0;
+                                int rowsUpdated = 0;
                                 var _SpContext = SPBaseRepository.GetSPContext(initialConfiguration.sharePointSiteUrl, this._AppSettings.SharePointSettings.NetworkLogin, this._AppSettings.SharePointSettings.Password, this._AppSettings.SharePointSettings.Domain);
                                 var SpInternalNames = initialConfiguration.Columns.Select(x => new { x.columnName }).ToList();
                                 int count = 0;
                                 var list = SPBaseRepository.GetListByTittleAsync(_SpContext, initialConfiguration.sharePointListName);
+                                var ListInCloud = SPBaseRepository.GetListItemsAsync(_SpContext, initialConfiguration.sharePointListName);
                                 var itemCreationInfromation = SPBaseRepository.listinformation();
+                                bool toUpdate = false;
+                                List<string> primarysKeyList = new List<string>();
+                                var primaryColumn = initialConfiguration.Columns.Find(x => x.isIdentifier == true);
+                                foreach (var item in ListInCloud)
+                                {
+                                    var sourceColumnData = item[primaryColumn.columnName]?.ToString();
+                                    primarysKeyList.Add(sourceColumnData);
+                                    //item[primaryColumn.columnName] = "Test";
+                                    //item.Update();
+                                    //_SpContext.ExecuteQueryAsync().Wait();
+
+                                }
+
+
+
 
 
                                 for (int i = 0; i < data.GetLongLength(0); i++)
                                 {
+                                    toUpdate = false;
                                     var newItem = list.AddItem(itemCreationInfromation);
                                     count = 0;
                                     for (int j = 0; j < data.GetLength(1); j++)
@@ -202,74 +220,175 @@ namespace builk_uploads_api.FileData.Repositories
                                         {
                                             var documentHeader = data[0, j];
                                             var columnConfig = initialConfiguration.Columns.Find(x => x.filecolumnName.ToUpper() == documentHeader.ToUpper());
-                                            if (columnConfig != null && data[i, j] != null)
+                                            var fieldTo = primarysKeyList.Find(x => x == data[i, j]);
+                                            if (fieldTo != null)
                                             {
-                                                if (columnConfig.validation != null)
+                                                toUpdate = true;
+
+                                                foreach (var item in ListInCloud)
                                                 {
-                                                    bool fieldValidation = SPColumnValidation(columnConfig.validation, data[i, j]);
-                                                    if (!fieldValidation)
+                                                    var sourceColumnData = item[primaryColumn.columnName]?.ToString();
+                                                    if (sourceColumnData == fieldTo)
                                                     {
-                                                        error = true;
-                                                        ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.InvalidData,
-                                                        columnConfig.validationErrorMsg, j + 1, i+1, Severity.Fatal);
-                                                        result.errorDetails.Add(ErrorValidation);
+
+                                                        for (int k = 0; k < data.GetLength(1); k++)
+                                                        {
+                                                            var d = data[i, k];
+                                                            var internalName = SpInternalNames[k].columnName;
+                                                            if (columnConfig != null && data[i, j] != null)
+                                                            {
+                                                                if (columnConfig.validation != null)
+                                                                {
+                                                                    bool fieldValidation = SPColumnValidation(columnConfig.validation, data[i, k]);
+                                                                    if (!fieldValidation)
+                                                                    {
+                                                                        error = true;
+                                                                        ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.InvalidData,
+                                                                        columnConfig.validationErrorMsg, j + 1, i + 1, Severity.Fatal);
+                                                                        result.errorDetails.Add(ErrorValidation);
+                                                                    }
+                                                                }
+
+                                                                switch (columnConfig.type)
+                                                                {
+                                                                    case variablesType.Int:
+                                                                        int num;
+                                                                        bool IsInt = Int32.TryParse(data[i, j], out num);
+                                                                        if (IsInt)
+                                                                            item[internalName] = data[i, k];
+                                                                        else
+                                                                        {
+                                                                            error = true;
+                                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
+                                                                             _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                                                            result.errorDetails.Add(ErrorValidation);
+                                                                        }
+                                                                        break;
+                                                                    case variablesType.Boolean:
+                                                                        bool IsBool = Boolean.TryParse(data[i, j], out IsBool);
+                                                                        if (IsBool)
+                                                                            item[internalName] = data[i, k];
+                                                                        else
+                                                                        {
+                                                                            error = true;
+                                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
+                                                                             _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                                                            result.errorDetails.Add(ErrorValidation);
+                                                                        }
+                                                                        break;
+
+                                                                    case variablesType.Datetime:
+                                                                        DateTime date;
+                                                                        bool IsDate = DateTime.TryParse(data[i, j], out date);
+                                                                        if (IsDate)
+                                                                            item[internalName] = data[i, k];
+                                                                        else
+                                                                        {
+                                                                            error = true;
+                                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
+                                                                             _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                                                            result.errorDetails.Add(ErrorValidation);
+                                                                        }
+                                                                        break;
+                                                                    default:
+                                                                        item[internalName] = data[i, k];
+                                                                        break;
+                                                                };
+
+                                                            }
+
+
+                                                            //var internalName = SpInternalNames[k].columnName;
+                                                            //item[internalName] = data[i, k];
+                                                            //item.Update();
+                                                            //_SpContext.ExecuteQueryAsync().Wait();
+
+                                                        }
+                                                        if (!error)
+                                                        {
+                                                            rowsUpdated++;
+                                                            item.Update();
+                                                            _SpContext.ExecuteQueryAsync().Wait();
+                                                        }
+
+                                                        break;
                                                     }
+
                                                 }
 
-                                                var internalName = SpInternalNames[count].columnName;
-                                                count++;
-
-                                                switch (columnConfig.type)
+                                            }
+                                            else
+                                            {
+                                                if (columnConfig != null && data[i, j] != null)
                                                 {
-                                                    case variablesType.Int:
-                                                        int num;
-                                                        bool IsInt = Int32.TryParse(data[i, j], out num);
-                                                        if (IsInt)
-                                                            newItem[internalName] = data[i, j];
-                                                        else
-                                                        {
-                                                            error = true;
-                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                             _localizer["Thedata"] +" "+ data[i, j] + " " + _localizer["correspondsData"]+ " " + documentHeader, j + 1,i+1, Severity.Fatal);
-                                                            result.errorDetails.Add(ErrorValidation);
-                                                        }
-                                                        break;
-                                                    case variablesType.Boolean:
-                                                        bool IsBool = Boolean.TryParse(data[i, j], out IsBool);
-                                                        if (IsBool)
-                                                            newItem[internalName] = data[i, j];
-                                                        else
-                                                        {
-                                                            error = true;
-                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                             _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
-                                                            result.errorDetails.Add(ErrorValidation);
-                                                        }
-                                                        break;
 
-                                                    case variablesType.Datetime:
-                                                        DateTime date;
-                                                        bool IsDate = DateTime.TryParse(data[i, j], out date);
-                                                        if (IsDate)
-                                                            newItem[internalName] = data[i, j];
-                                                        else
+                                                    if (columnConfig.validation != null)
+                                                    {
+                                                        bool fieldValidation = SPColumnValidation(columnConfig.validation, data[i, j]);
+                                                        if (!fieldValidation)
                                                         {
                                                             error = true;
-                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
-                                                             _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                                            ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.InvalidData,
+                                                            columnConfig.validationErrorMsg, j + 1, i + 1, Severity.Fatal);
                                                             result.errorDetails.Add(ErrorValidation);
                                                         }
-                                                        break;
-                                                    default:
-                                                        newItem[internalName] = data[i, j];
-                                                        break;
-                                                };
+                                                    }
+
+                                                    var internalName = SpInternalNames[count].columnName;
+                                                    count++;
+
+                                                    switch (columnConfig.type)
+                                                    {
+                                                        case variablesType.Int:
+                                                            int num;
+                                                            bool IsInt = Int32.TryParse(data[i, j], out num);
+                                                            if (IsInt)
+                                                                newItem[internalName] = data[i, j];
+                                                            else
+                                                            {
+                                                                error = true;
+                                                                ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
+                                                                 _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                                                result.errorDetails.Add(ErrorValidation);
+                                                            }
+                                                            break;
+                                                        case variablesType.Boolean:
+                                                            bool IsBool = Boolean.TryParse(data[i, j], out IsBool);
+                                                            if (IsBool)
+                                                                newItem[internalName] = data[i, j];
+                                                            else
+                                                            {
+                                                                error = true;
+                                                                ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
+                                                                 _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                                                result.errorDetails.Add(ErrorValidation);
+                                                            }
+                                                            break;
+
+                                                        case variablesType.Datetime:
+                                                            DateTime date;
+                                                            bool IsDate = DateTime.TryParse(data[i, j], out date);
+                                                            if (IsDate)
+                                                                newItem[internalName] = data[i, j];
+                                                            else
+                                                            {
+                                                                error = true;
+                                                                ErrorDetails ErrorValidation = ErrorFactory.GetError(ErrorEnum.DataType,
+                                                                 _localizer["Thedata"] + " " + data[i, j] + " " + _localizer["correspondsData"] + " " + documentHeader, j + 1, i + 1, Severity.Fatal);
+                                                                result.errorDetails.Add(ErrorValidation);
+                                                            }
+                                                            break;
+                                                        default:
+                                                            newItem[internalName] = data[i, j];
+                                                            break;
+                                                    };
+                                                }
                                             }
 
                                         }
 
                                     }
-                                    if (i != 0 && !error)
+                                    if (i != 0 && !error && !toUpdate)
                                     {
                                         newItem.Update();
                                         _SpContext.ExecuteQueryAsync().Wait();
@@ -281,7 +400,9 @@ namespace builk_uploads_api.FileData.Repositories
                                 return new SaveDataResult
                                 {
                                     success = error ? false : true,
-                                    message = error ? _localizer[ErrorEnum.UploadError.ToString()] : rowsUploaded + " " + _localizer[ErrorEnum.Uploaded.ToString()] + (rowsUploaded>1?"s " : " " )+ _localizer[ErrorEnum.Uploaded.ToString()],
+                                    message = error ? _localizer[ErrorEnum.UploadError.ToString()] : _localizer[ErrorEnum.Uploaded.ToString()] + ", " + (rowsUpdated == 1 ? rowsUpdated + " " + _localizer["SingularUpdatedData"] + (rowsUploaded > 0 ? ", " : "") : rowsUpdated > 1 ? rowsUpdated + " " + _localizer["PluralUpdatedData"] + (rowsUploaded > 0 ? ", " : "") : "") +
+                                            (rowsUploaded == 1 ? rowsUploaded + " " + _localizer["SingularInsertedData"] : (rowsUploaded >= 2 ? +rowsUploaded + " " + _localizer["PluralInsertedData"] : "")),
+
                                     errorDetails = result.errorDetails
                                 };
 

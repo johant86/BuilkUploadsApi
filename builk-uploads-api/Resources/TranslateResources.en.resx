@@ -148,10 +148,10 @@
     <value>do not match the document settings, please check the column name.</value>
   </data>
   <data name="PluralInsertedData" xml:space="preserve">
-    <value>updated data</value>
+    <value>inserted data</value>
   </data>
   <data name="PluralUpdatedData" xml:space="preserve">
-    <value>inserted data</value>
+    <value>updated data</value>
   </data>
   <data name="PrimaryKeyError" xml:space="preserve">
     <value>Identifier error.</value>
@@ -163,10 +163,10 @@
     <value>row</value>
   </data>
   <data name="SingularInsertedData" xml:space="preserve">
-    <value>updated data</value>
+    <value>data inserted</value>
   </data>
   <data name="SingularUpdatedData" xml:space="preserve">
-    <value>data inserted</value>
+    <value>updated data</value>
   </data>
   <data name="The document has" xml:space="preserve">
     <value>The document has</value>

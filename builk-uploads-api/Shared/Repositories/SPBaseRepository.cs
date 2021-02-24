@@ -52,6 +52,37 @@ namespace builk_uploads_api.Shared.Repositories
             return new ListItemCreationInformation();
         }
 
+        public static ListItemCollection GetListItemsAsync(ClientContext Context, string ListTitle, string ViewName = "All Items", int RowLimit = 5000)
+        {
+            try
+            {
+                List list = Context.Web.Lists.GetByTitle(ListTitle);
+                Context.Load(list);
+                Context.ExecuteQueryAsync().Wait();
+                View view = list.Views.GetByTitle(ViewName);
+                Context.Load(view);
+                Context.ExecuteQueryAsync().Wait();
+
+                CamlQuery query = new CamlQuery();
+                query.ViewXml = view.ViewQuery;
+                query.DatesInUtc = false;
+
+                ListItemCollection items = list.GetItems(query);
+                Context.Load(items);
+                Context.ExecuteQueryAsync().Wait();
+
+
+                return items;
+            }
+            catch (Exception ex)
+            {
+
+                throw ex;
+            }
+
+
+        }
+
         public static bool SPColumnValidation(string Validation, string value)
         {
             if (Regex.IsMatch(value, Validation))
