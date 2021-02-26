@@ -117,7 +117,8 @@ namespace builk_uploads_api.DataContext.Context
                                         }
                                         break;
                                     case variablesType.Boolean:
-                                        bool IsBool = Boolean.TryParse(exelData, out IsBool);
+                                        bool Bool;
+                                        bool IsBool = Boolean.TryParse(exelData, out Bool);
                                         if (IsBool)
                                         {
                                             if (!toUpdate)
@@ -174,7 +175,7 @@ namespace builk_uploads_api.DataContext.Context
                     {
                         if(query.Contains(");"))
                         querys.Add(query);
-                        if (updateQuery.Contains(","))
+                        if (updateQuery.Contains(",") && !error)
                         {
                             updateQuery += $" WHERE {primaryColumn.columnName}={fieldToUpdate}";
                             //var idRegister = this.Data.FromSqlRaw($"{updateQuery} SELECT MAX(id) AS id FROM {configuration.tableName}").AsEnumerable<DataUploaded>().FirstOrDefault();

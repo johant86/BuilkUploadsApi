@@ -17,7 +17,7 @@ CREATE TABLE [dbo].[tb_SourceConfiguration]
 	[alias] VARCHAR(50) NOT NULL,
 	[tableName] VARCHAR(50) NOT NULL,
 	[conectionString] VARCHAR(200)  NULL,
-	[sharePointSiteUrl] VARCHAR(50)  NULL,
+	[sharePointSiteUrl] VARCHAR(50)  NULL,	
 	[sharePointListName] VARCHAR(50)  NULL,
 	[lastModificationDate] DATETIME  NOT NULL,
 	[lastModificationUser] INT  NOT NULL,
@@ -69,7 +69,7 @@ CREATE TABLE [dbo].[tb_ColumnBySource]
     REFERENCES [dbo].[tb_SourceConfiguration] ([id]),
 	CONSTRAINT [FK_builkUploads_tb_ColumnBySource_idValidation_tb_Validations]
 	FOREIGN KEY ([idValidation])
-    REFERENCES [dbo].[tb_DataType] ([id]),
+	   REFERENCES [dbo].[tb_DataType] ([id]),
 	CONSTRAINT [FK_builkUploads_tb_ColumnsBySource_idDataType_tb_DataType]
 	FOREIGN KEY ([idDatatype])
 )

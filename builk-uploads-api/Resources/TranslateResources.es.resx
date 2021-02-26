@@ -178,7 +178,7 @@
     <value>El dato</value>
   </data>
   <data name="Uploaded" xml:space="preserve">
-    <value>Carga completada,</value>
+    <value>Carga completada</value>
   </data>
   <data name="UploadError" xml:space="preserve">
     <value>Fallo en la carga de datos.</value>

@@ -178,7 +178,7 @@
     <value>The data</value>
   </data>
   <data name="Uploaded" xml:space="preserve">
-    <value>Uploaded successfully,</value>
+    <value>Uploaded successfully</value>
   </data>
   <data name="UploadError" xml:space="preserve">
     <value>Upload failure.</value>
