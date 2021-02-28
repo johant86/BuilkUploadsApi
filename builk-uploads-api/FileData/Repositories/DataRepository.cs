@@ -91,7 +91,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                filecolumnName = cs.filecolumnName,
                                                columnName = cs.columnName,
                                                type = dt.name,
-                                               validation = v.validation,
+                                               validation = (String)v.validation,
                                                idValidation = v.id,
                                                validationErrorMsg= v.validationErrorMsg,
                                                isIdentifier=cs.isIdentifier
@@ -116,7 +116,7 @@ namespace builk_uploads_api.FileData.Repositories
                                 conectionString = configSorce.conectionString,
                                 sharePointListName = configSorce.sharePointListName,
                                 sharePointSiteUrl = configSorce.sharePointSiteUrl,
-                                Columns = columns
+                                Columns =  columns
                             };
 
 
