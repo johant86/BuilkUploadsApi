@@ -91,7 +91,7 @@ namespace builk_uploads_api.FileData.Repositories
                                                filecolumnName = cs.filecolumnName,
                                                columnName = cs.columnName,
                                                type = dt.name,
-                                               validation = (String)v.validation,
+                                               validation = v.validation.Replace("\\\\", "\\") ,
                                                idValidation = v.id,
                                                validationErrorMsg= v.validationErrorMsg,
                                                isIdentifier=cs.isIdentifier
